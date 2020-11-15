@@ -167,4 +167,125 @@ Null类型同样只有一个值，即特殊值null。表示一个空对象指针
 
 ### Number 类型
 Number 类型使用了IEEE 754 格式表示整数和浮点数(双精度值)。
+八进制：第一个数字必须是零(0)，es6后改为: 0o。例：070 // 56。
+十六进制：以 0x 开头（区分大小写）后面是（0-9 以及 A-F）。例： 0xA  //10         0x1f   //31   
+
+1.浮点数
+数值中必须包含小数点，而且小数点后面必须至少一个数字。存在精度问题。0.1 + 0.2 //0.30000000000000004
+```
+let a = 1.1;
+let b = .1; //有效，但不推荐
+let c = 3.125e7  //科学计数法 等于3.125 * 10的7次幂  31250000
+let b = 3.1e-7    //0.0000003.1
+```
+
+2.值得范围
+最小值：`Number.MIN_VALUE` 5e-324
+最大值：`Number.MAX_VALUE` 1.7976931348623157e+308
+如果超过最大值会转化为 Infinity(正无穷大) 或 -Infinity(负无穷大)。
+isFinite(num) 这个函数可以检测是否超出有限数值范围。
+
+3.NaN
+"不是数值"(Not a Number),用来表示本来要返回数值的操作失败了(而不是抛出错误)。比如 0/0 返回NaN。如果分母为0, 5/0 会返回Infinity。
+涉及NaN的操作始终返回NaN。NaN 不等于包括NaN在内的任何值。NaN == NaN //false
+`isNaN()`
+该函数接收一个参数，可以是任意数据类型，然后判断这个参数是否“不是数值”。吧一个值传给isNaN()后，改函数会尝试把它转化为数值。某些非数值的值可以直接转化为数值，如字符串"10"或布尔值。任何不能转化为数值的值都会导致这个函数返回true。例：
+```
+console.log(isNaN(NaN));   //true
+console.log(isNaN(NaN));   //false , 10是一个数值
+console.log(isNaN("10"));  //false
+console.log(isNaN("bulue"));   //true
+console.log(isNaN(true));     //false
+```
+
+4. 数值转换
+**Number()**  
+是转型函数，可用于任何数据类型。
+ * 布尔值，true 转为 1，false 转为 0。
+ * 数值，直接返回
+ * null，返回 0.
+ * undefined，返回NaN
+ * 字符串，应用一下规则：
+    * 如果字符串包含数值字符，转换为一个十进制数值。因此，Number("1")返回1 。
+    * 如果字符串包含有效浮点数，则会转换为相应浮点数。
+    * 如果包含有效的十六进制格式如"0xf",转换为对应的十进制整数值。
+    * 如果是空字符串返回 0 。
+    * 如果字符串包含除上述情况之外的其他字符，返回NaN。
+* 对象，调用 valueOf() 方法，并按照上述规则转换返回的值。如果转换结果是 NaN，则调用 toString() 方法，再按照转换字符串的规则转换。 
+
+**parseInt()**
+从第一个字符开始检测，直到末尾或者中途配到非数值字符停止。第二个参数用于指定底数(进制数)。
+```
+let num1 = parseInt("12a23b");           // 12
+let num2 = parseInt("");                 // NaN
+let num3 = parseInt("0xA");              //16 解释为十六进制整数
+let num4 = parseInt("1.34");             // 1
+
+let num5 = parseInt("AF", 16);          //175   如果指定进制可以省略 0x
+let num5 = parseInt("AF");
+```
+
+**parseFloat()**
+与parseInt()类似，区别始终忽略字符串开头的零。
+```
+let num1 = parseFloat("123blue");      // 1234
+let num2 = parseFloat("0xA");          // 0
+let num3 = parseFloat("22.31.123");    // 22.31
+let num4 = parseFloat("3.12e6");       // 3120000  与parseInt()不同可以识别科学计数法
+```
+
+### String 
+表示零或多个16位Unicode字符序列。可以使用双引号(")、单引号(')、反引号(`)；  
+
+1. 字符字面量
+\n        换行
+\t        制表
+\b        退格
+\r        回车
+\f        换页
+\\        反斜杠
+\'        单引号
+\"        双引号
+\`        反引号
+\xnn      以十六进制编码nn表示的字符
+\unnn     以十六进制编码nnn表示Unicode字符
+
+2. 字符串的特点
+不可变(immutable),一旦创建，它们的值就不能变了。要修改某个变量中的字符串，必须销毁原始字符串，然后将新值得另一个字符串保存到该变量。
+
+3. 转换字符串
+有两种方法： dateObject.toString() 和 String()；
+**toString()** 方法可用于数值、布尔值、对象和字符串值。null 和 undefined 没有这个方法。可以接收一个底数参数。
+```
+let age = 11;
+let ageString = age.toString();      // "11"
+let found = true;
+let foundString = found.toString();  // "true"
+let num = 10;
+console.log(num.toString());         // "10"
+console.log(num.toString(2));        // "1010"
+console.log(num.toString(8));        // "12"
+console.log(num.toString(10));       // "10"
+console.log(num.toString(16));       // "a"
+```
+**String()** 始终返回表示相应类型的字符串。遵循以下规则：
+ * 如果值有toString()方法，则调用该方法（不传参数）并返回结果
+ * 如果值为 null，返回"null" 。
+ * 如果值为 undefined，返回 "undefined" 。、
  
+ 4. 模板字面量
+ ECMScript6 新增。可以保留换行字符，可以跨行定义字符串。
+ ```
+ let pageHTML = `
+ <div>
+  <a href="#">
+    <span>Jake</span>
+  </a>
+</div>`;
+```
+5. 字符串插值
+在模板字符串中使用 ${} ,所有插入的值都会使用toString()强制转型为字符串。也可以调用函数和方法。
+
+6. 模板字面量标签函数
+
+
