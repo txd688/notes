@@ -234,7 +234,7 @@ let num3 = parseFloat("22.31.123");    // 22.31
 let num4 = parseFloat("3.12e6");       // 3120000  与parseInt()不同可以识别科学计数法
 ```
 
-### String 
+### String 类型
 表示零或多个16位Unicode字符序列。可以使用双引号(")、单引号(')、反引号(`)；  
 
 1. 字符字面量
@@ -287,5 +287,81 @@ console.log(num.toString(16));       // "a"
 在模板字符串中使用 ${} ,所有插入的值都会使用toString()强制转型为字符串。也可以调用函数和方法。
 
 6. 模板字面量标签函数
+标签函数接收一个被插值分割后的的模板和对每一个插值表达式的结果。
+```
+let a = 6;
+let b= 9;
+function simpleTag(strings,a1,a2,sum){
+  console.log(strings);
+  console.log(a1);
+  console.log(a2);
+  console.log(sum);
+  return 'foot';
+}
+let tag = simpleTag`${ a } + ${ b } = ${ a + b }`;  
+//  ["", " + ", " = ", ""]
+//  6
+//  9
+//  15
+console.log(tag);         //   foot
 
+//函数可以转变为以下：
+function simpleTag2(strings,...arg){
+  console.log(strings);
+  for(const i of arg){
+    console.log(i);
+  }
+  return 'foot';
+}
+
+//过滤HTML字符串，防止用户输入恶意内容
+function filterSpitefulCode(strings,...values){
+   return strings.reduce((s,v,idx)=>{
+       if(idx>0){
+           const prev=values[idx-1].replace(/</g,"&lt;")
+           .replace(/>/g,"&gt;")
+           .replace(/&/g, "&amp;");
+           s+=prev
+       }
+       return s+v
+   },'')
+}
+
+const badCode= '<script>alert("abc")</script>'
+const message=filterSpitefulCode`<p>${badCode} has been transformed safely~`
+
+console.log(message)
+```
+
+7. 原始字符串
+使用模板字面量可以直接获取原始的模板字面内容，而不是转义后的字符。使用默认 String.raw 标签函数：
+```
+console.log(`\u00A9`);       // ©
+console.log(String.raw`\u00A9`);     // \u00A9      
+console.log(`first line \nsecond line`);
+//  first line 
+//  second line
+console.log(String.raw`first line \nsecond line`);
+//  first line \nsecond line
+
+//也可以通过标签函数第一个参数，.raw 属性取得每个字符串的原始内容：
+function printRaw(strings){
+    for(const i of strings){
+        console.log(i);
+    }
+    console.log('--------------------------------');
+    for(const j of strings.raw){
+        console.log(j);
+    }
+}
+printRaw`\u00A9 ${ 'and' } \n`;
+//   ©
+//     
+//   --------------------------------
+//   \u00A9 
+//   \n
+```
+
+### Symbol 类型
+符号是原始值，且是唯一、不可变得。用途：确保对象属性使用唯一标识符，不会发生属性冲突的危险。
 
