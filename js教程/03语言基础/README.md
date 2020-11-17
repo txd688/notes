@@ -364,4 +364,80 @@ printRaw`\u00A9 ${ 'and' } \n`;
 
 ### Symbol 类型
 符号是原始值，且是唯一、不可变得。用途：确保对象属性使用唯一标识符，不会发生属性冲突的危险。
+1. 符号的基本使用
+```
+let sym = Symbol();   
+console.log(typeof sym);       // symbol
 
+//添加描述，方便未来调试.与标识无关。
+let fooSymbol = Symbol('foo');
+let otherSymbol = Symbol('foo');
+console.log(fooSymbol == otherSymbol);       //false
+```
+没有字面量语法，只要创建一个Symbol()实例将其用作对象的新属性，不会覆盖已有的对象属性。不能用作构造函数。  
+
+2. 使用**全局符号**注册表
+Symbol.for()方法可以重用和共享符号实例。该方法执行幂等操作，会检测全局运行的注册表，如果不存在创建，存在返回。(传入字符串，任何值都会被转为字符串)
+```
+let fooGlobalSymbol = Symbol.for('foo');       //创建新的符号
+let otherGlobalSymbol = Symbol.for('foo')；    // 重用已有符号
+console.log(fooGlobalSymbol == otherGlobalSymbol);        //true
+```
+Symbol.keyFor()来查询是否有全局符号。(对应上面的方法)该方法接收一个符号，如果不是报错。
+```
+//创建全局符号
+let a = Symbol.for('foo');
+console.log(Symbol.keyFor(a));     // foo
+
+//创建普通符号
+let b = Symbol('foo');
+console.log(Symbol.keyFor(b));   // undefined
+```
+
+3. 使用符号作属性
+凡是可以使用字符串或数值作为属性的地方，都可以使用符号。
+```
+let s1 = Symbol('foo'),
+    s2 = Symbol('bar'),
+    s3 = Symbol('baz'),
+    s4 = Symbol('qux');
+let obj = {
+  [s1] : 'foo val'
+};
+//如果是变量，要有[]包裹，也可使用：obj[s1] = 'foo val';
+console.log(obj);     //{Symbol(foo): foo val}
+Object.defineProperty(obj, s2, {value: 'bar val'});
+Object.defineProperties(obj, {
+   [s3]: {value: 'baz value'},
+   [s4]: {value: 'qux value}
+ });
+ //上述4种方法都可以使用。
+ ```
+ 另外 Object.getOwnPropertyNames()返回常规属性数组，Object.getOwnPropertySymbols()返回符号属性数组。Reflect.ownKeys()返回这两种。
+ ```
+ let s1 = Symbol('foo');
+ let s2 = Symbol('bar');
+ let obj = {
+    [s1]: 'foo val',
+    [s2]: 'bar val',
+    baz: 'baz val',
+    qux: 'qux val'
+  }
+  console.log(Object.getOwnPropertyNames(obj));          // ["baz", "qux"]
+  console.log(Object.getOwnPropertySymbols(obj));        // [Symbol(foo), Symbol(bar)]
+  console.log(Reflect.ownKeys(obj));                     // ["baz", "qux", Symbol(foo), Symbol(bar)]
+ ```
+ 如果没有显式地保存这些属性的应用，必须遍历对象的所有符号属性才能找到相应的属性键：
+ ```
+let obj = {
+  [Symbol('foo')]: 'foo val',
+  [Symbol('bar')]: 'bar val',
+  baz: 'baz val',
+  qux: 'qux val'
+}
+let barSymbol = Object.getOwnPropertySymbols(obj).find((sym) => sym.toString().match(/bar/))
+console.log(barSymbol);            // Symbol(bar)
+ ```
+ 
+ 4. 常用内容符号
+用于暴露语言内部行为，可以直接访问、重写或模拟这些行为。65789
