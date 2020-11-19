@@ -440,4 +440,86 @@ console.log(barSymbol);            // Symbol(bar)
  ```
  
  4. 常用内容符号
-用于暴露语言内部行为，可以直接访问、重写或模拟这些行为。65789
+用于暴露语言内部行为，可以直接访问、重写或模拟这些行为。
+
+5. Symbol.asyncIterator
+一个方法，该方法返回对象默认的AsyncIterator.由 for-await-of 语句使用。实现异步迭代器API的函数。
+for-await-of 循环会利用这个函数执行异步迭代操作。循环时，它们会调用以Symbol.asyncIterator为键的函数，并期望这个函数会返回一个实现迭代器API的对象。很多时候返回的是AsyncGenerator：
+```
+class Foo{
+    async *[Symbol.asyncIterator](){}
+}
+let f = new Foo();
+console.log(f[Symbol.asyncIterator]());
+//AsyncGenerator {<suspended>}
+```
+技术上，这个有Symbol.asyncIterator 函数生成的对象应该通过其next()方法陆续返回Promise实例。可以先显式地调用next()方法返回，也可以隐式地通过异步生成函数返回。
+```
+class Emitter{
+    constructor(max){
+        this.max = max;
+        this.asyncIdx = 0;
+    }
+    
+    async *[Symbol.asyncIterator](){
+        while(this.asyncIdx < this.max){
+            yield new Promise((resolve) => resolve(this.asyncIdx++));
+        }
+    }
+}
+
+async function asyncCount(){
+    let emitter = new Emitter(5);
+    
+    for await(const x of emitter){
+        console.log(x);
+    }
+}
+
+asyncCount()
+/*
+0
+1
+2
+3
+4
+*/
+```
+6. Symbol.hasInstance
+一个方法，该方法决定一个构造函数对象是否认可一个对象是它的实例。由 instanceof 操作符使用。instanceof 操作符可以用来确定一个对象实例的原型链上是否有原型。
+```
+function Foo(){}
+let f = new Foo();
+console.log(f instanceof Foo);   // true
+
+class Bar{}
+let b = new Bar()
+console.log(b instanceof Bar)     //true
+```
+在ES6中，instanceof 操作符会使用 Symbol.hasInstance 函数来确定关系。以 Symbol.hasInstance 为键的函数执行同样的操作，只是操作数对调了一下：
+```
+function Foo() {}
+let f = new Foo()
+console.log(Foo[Symbol.hasInstance](f))        // true
+
+class Bar{}
+let b = new Bar()
+console.log(Bar[Symbol.hasInstance](b))       // true
+```
+这个属性定义在 Function 的原型上，因此默认在所有函数和类上都可以调用。由于 instanceof 操作符会在原型链上寻找这个属性定义，就跟在原型链上寻找其他属性一样，因此可以再继承的类上通过静态方法重新定义这个函数：
+```
+class Bar {}
+class Baz extends Bar{
+    static [Symbol.hasInstance](){
+        return false;
+    }
+}
+let b = new Bar();
+
+console.log(Bar[Symbol.hasInstance](b));       //true
+console.log(b instanceof Bar);                // true 
+console.log(Baz[Symbol.hasInstance](b));      // false
+console.log(b instanceof Baz);                // false
+```
+
+7. Symbol.isConcatSpreadable
