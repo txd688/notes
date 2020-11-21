@@ -439,7 +439,7 @@ let barSymbol = Object.getOwnPropertySymbols(obj).find((sym) => sym.toString().m
 console.log(barSymbol);            // Symbol(bar)
  ```
  
- 4. 常用内容符号
+4. 常用内容符号
 用于暴露语言内部行为，可以直接访问、重写或模拟这些行为。
 
 5. Symbol.asyncIterator
@@ -523,3 +523,293 @@ console.log(b instanceof Baz);                // false
 ```
 
 7. Symbol.isConcatSpreadable
+用于配置某对象作为 Array.prototype.concat()方法的参数时是否展开其数组元素，如果为 true ,则应该用 Array.prototype.concat() 打平其**数组元素**，追加到数组末尾。如果为 false 或者假值会导致**整个对象**被追加到数组末尾。(提示：Array.prototype.concat() 这个方法用来合并数组)。
+```
+let initial = ['foo'];
+let array = ['bar'];
+console.log(array[Symbol.isConcatSpreadable]);        // undefined
+console.log(initial.concat(array));                  // ["foo", "bar"]
+
+array[Symbol.isConcatSpreadable] = false;
+console.log(initial.concat(array));                 // ["foo", Array(1)]
+
+let arrayLikeObject = { length: 1, 0:'baz'};       //这是个类数组
+let initial2 = ['foo']
+console.log(arrayLikeObject[Symbol.isConcatSpreadable])     // undefined
+console.log(initial2.concat(arrayLikeObject));              //  ["foo", {…}]
+arrayLikeObject[Symbol.isConcatSpreadable] = true;
+console.log(initial2.concat(arrayLikeObject));              //   ["foo", "baz"]
+```
+
+8. Symbol.iteartor
+一个方法，该方法返回对象默认的迭代器。由 for-of 语句使用。
+```
+class Foo{
+    *[Symbol.iterator]() {}
+}
+let f = new Foo();
+console.log(f[Symbol.iterator]());       // Generator {<suspended>}
+```
+可以通过next()显式地返回，也可以隐式地通过生成器函数返回：
+```
+class Emitter{
+    constructor(max){
+        this.max = max;
+        this.idx = 0;
+    }
+    
+    *[Symbol.iterator](){
+        while(this.idx < this.max){
+            yield this.idx++;
+        }
+    }
+}
+
+function count(){
+    let emitter = new Emitter(5);
+    
+    for (const x of emitter){
+        console.log(x);
+    }
+}
+count();
+/*
+0
+1
+2
+3
+4
+*/
+```
+
+9. Symbol.match
+一个正则表达式方法，该方法用正则表达式去匹配字符串。正则表达式的原型上默认有这个函数的定义。因此所有正则表达式实例默认是这个String 方法的有效参数。由String.prototype.match() 使用。
+```
+console.log(RegExp.prototype[Symbol.match]);        // [Symbol.match]() { [native code] }
+
+console.log('foobar'.match(/bar/));             // ["bar", index: 3, input: "foobar", groups: undefined]
+```
+String.prototype.match() 传入非正则表达式会转化为RegExp对象。如果想改变这种行为，让方法直接使用参数，则重新定义 Symbol.match 函数以取代默认对正则表达式求值的行为。返回值没有限制。
+```
+class FooMatcher{
+    static [Symbol.match](target){
+        return target.includes('foo');
+    }
+}
+
+console.log('foobar'.match(FooMatcher));       // true
+console.log('barbar'.match(FooMatcher));       // false
+
+// 小提示：上述是静态方法，下面是实例方法。具体查询 static
+
+class StringMatcher{
+    constructor(str){
+        this.str = str;
+    }
+    
+    [Symbol.match](target){
+        return target.includes(this.str);
+    }
+}
+console.log('foobar'.match(new StringMatcher('foo')));      // true
+console.log('foobar'.match(new StringMatcher('aa')));       // false
+```
+
+10. Symbol.replace
+一个正则表达式方法，该方法替换一个字符串中匹配的子串。由 String.prototype.replace() 使用。与上述类似。
+```
+console.log(RegExp.prototype[Symbol.replace]);      // [Symbol.replace]() { [native code] }
+
+class FooReplace{
+    static [Symbol.replace](target,replacement){
+        return target.split('foo').join(replacement);
+    }
+}
+console.log('barfoobaz'.replace(FooReplace,'qux'));      // barquxbaz
+```
+
+11. Symbol.search
+一个正则方法，该方法返回字符串中匹配正则表达式的索引。由 String.prototype.search() 方法使用。
+```
+console.log(RegExp.prototype[Symbol.search]);        // [Symbol.search]() { [native code] }
+console.log('foobar'.search(/bar/));                 //  3
+
+class FooSearch{
+    static [Symbol.search](target){
+        return target.indexOf('foo');
+    }
+}
+console.log('foobar'.search(FooSearch));          // 0
+console.log('barfoobar'.search(FooSearch));       // 3
+```
+12. Symbol.split
+一个正则表达式方法，该方法匹配正则表达式的索引位置拆分字符串。由 String.propotype.split() 方法使用。
+```
+console.log(RegExp.prototype[Symbol.split]);          // [Symbol.split]() { [native code] }
+console.log(('foobarbaz').split(/bar/));              //   ["foo", "baz"]
+
+class FooSplitter{
+    static [Symbol.split](target){
+        return target.split('foo');
+    }
+}
+console.log('barfoobaz'.split(FooSplitter));        // ["bar", "baz"]
+
+```
+
+13. Symbol.species
+一个函数值，该函数作为创建派生对象的结构函数。用于对内置类型实例方法的返回值暴露实例化派生对象的方法。
+```
+class Bar extends Array {}
+class Baz extends Array {
+    static get [Symbol.species](){
+        return Array;
+    }
+}
+
+let bar = new Bar();
+console.log(bar instanceof Array);         // true
+console.log(bar instanceof Bar);          // true
+bar = bar.concat('bar');
+console.log(bar instanceof Array);         // true
+console.log(bar instanceof Bar);          // true
+
+let baz = new Baz();
+console.log(baz instanceof Array);         // true
+console.log(baz instanceof Baz);          // true
+baz = baz.concat('baz');
+console.log(baz instanceof Array);         // true
+console.log(baz instanceof Baz);          // false
+```
+
+14. Symbol.toprimitive
+一个方法，该方法将对象转换为相应的原始值。
+```
+class Foo {}
+let foo = new Foo();
+console.log(3 + foo);       // 3[object Object]
+console.log( 3 - foo);      // console.log( 3 - foo);
+console.log(String(foo));   // console.log(String(foo));
+
+class Baz {
+    constructor(){
+        this[Symbol.toPrimitive] = function(hint){
+            switch(hint){
+                case 'number':
+                    return 3;
+                case 'string':
+                    return 'string bar';
+                case 'default':
+                default:
+                    return 'default bar';    
+            }  
+        }
+    }  
+}
+let baz = new Baz();
+console.log(3 + baz);    // 3default bar
+console.log(3 - baz);    // 0
+console.log(String(baz));  //string bar
+```
+
+15. Symbol.toStringTag
+一个字符串，该字符串用于创建对象的默认字符串描述。由 Object.protoype.toString() 使用。通过 toString() 方法获取对象标识时，会检索由 Symbol.toStringTag 指定的实例标识符，默认为 "Object"。内置类型已经指定了这个值，但自定义类型实例还需要明确定义。
+```
+let s = new Set();
+console.log(s);        // Set(0) {}
+console.log(s.toString());      // [object Set]
+console.log(s[Symbol.toStringTag]);      // Set
+
+class Foo {}
+let foo = new Foo();
+console.log(foo);         // Foo {}
+console.log(foo.toString());       // [object Object]
+console.log(foo[Symbol.toStringTag]);       // undefined
+
+class Bar {
+    constructor(){
+        this[Symbol.toStringTag] = "Bar";
+    }
+}
+let bar = new Bar();
+console.log(bar);            // Bar {Symbol(Symbol.toStringTag): "Bar"}
+console.log(bar.toString());      // [object Bar]
+console.log(bar[Symbol.toStringTag]);        // Bar
+```
+
+16. Symbol.unscopables
+一个对象，该对象所有的以及继承的属性，都会从关联对象的with环境绑定中排除。让其映射对应属性的键值为true，就可以阻止该属性出现在with环境绑定中。
+```
+let o = {foo :'bar'};
+with (o){
+    console.log(foo);          // bar
+}
+o[Symbol.unscopables] = {
+    foo: true
+};
+with (o){
+    console.log(foo);       // ReferenceError
+}
+```
+### Object 类型
+一组数据与功能的集合。创建实例，再添加属性与方法。`let obj = new Object();`
+每一 Object 的实例都有如下属性和方法：
+* constructor:是一种创建和初始化class创建的对象的特殊方法。
+* hasOwnProperty: 用于判断当前对象实例(不是原型)上是否存在给定的属性。
+* isPrototypeof: 判断当前对象是否为另一个对象的原型。
+* propertyIsEnumerable: 判断给定的属性是否可以使用。
+* toLocaleString()：返回对象的字符串表示，该字符串反映对象所在的本地化执行环境。
+* toString(): 返回对象的字符串表示。
+* valueOf(): 返回对象对应的字符串、数值或布尔值表示。
+
+### 操作符
+
+#### 一元操作符
+1. 递增/递减操作符
+```
+let age = 29;
+++age;   // 30
+--age    // 29
+age++;  //30
+age--;  //29
+//区别：前缀版在操作的变量前发生，后缀版在操作的变量后发生
+let anotherAge = ++age +2;
+cosole.log(age);     // 30
+console.log(anotherAge);  // 32
+
+let num1 = 2;
+let num2 = 20;
+let num3 = num1-- + num2;
+let num4 = num1 + num2;
+console.log(num3);     // 22
+console.log(num4);     // 21
+```
+2. 一元加和减
+放在数值前无影响，但放在非数值的，会执行与使用与Number()转型函数一样的类型转换：布尔值false和true转换为0和1，字符串根据特殊规则进行解析，对象会掉用它们的valueOf()和/或toString()方法以得到可以转换的值。
+```
+let num = 25;
+num = +num;
+console.log(num);        // 25
+
+let s1 = "01";
+let s2 = "1.1";
+let s3 = "z";
+let b = false;
+let f =1.1;
+let o = {
+  valueOf(){
+     return -1;
+  }
+};
+
+s1 = +s1;   // 1
+s2 = +s2;   // 1.1
+s3 = +s3;  // NaN
+b = +b;    // 0
+f = +f;    // 1.1
+o = +o;    // -1
+```
+
+3. 位操作符
+数值的底层操作，也就是操作内存中表示数据的比特(位)。ECMAScript中的所有数值都以IEEE 754 64位格式存储，但位操作并不直接应用到64位表示，而是先把值转化为32位整数，在进行位操作，之后再把结果转化为64位。因为64位整数存储格式是不可见的，就只需要考虑32位整数即可。  
+
