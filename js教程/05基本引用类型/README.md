@@ -74,4 +74,80 @@ b.toUTCString()          // "Wed, 22 May 2019 16:00:00 GMT"
 
 ### RegExp
 `let expression = /pattern/flags;`
+匹配模式的标记(flag)(可以带零个或多个)
+| 模式 | 作用 |
+|------|------|
+| g    | 全局模式，找到所有匹配内容 |
+| i    | 不区分大小写 |
+| m    | 多行模式，到一行文本末尾会继续查找 |
+| y    | 粘附模式，只查找从lastIndex开始及之后的字符串 |
+| u    | Unicode模式，启用Unicode模式 |
+| s    | dotAll模式，表示元字符，匹配任何字符(包含\n或\r) |
+```
+let pattern1 = /[bc]at/i;                     // 字面量形式
+//等价于
+let pattern2 = new RegExp("[bc]at","i");      //这个参数是字符串，要进行二次转义
+```
 
+#### 实例属性
+| global | 布尔值，表示是否设置了g标记 |
+| ignoreCase | i |
+| unciode |  u |
+| sticky |  y  |
+| lastIndex | 整数，表示在下次搜索的开始位置 |
+| multiline | m |
+| dotAll | s |
+| source | 字面的字符串 |
+| flags | 标记字符串(flag) |
+```
+let pattern = new RegExg("\\[bc\\]at","i");
+pattern.flags;    // "i"
+```
+
+#### 实例方法
+exec(string) 用于配合捕获组使用。  
+test(string) 返回布尔值，是否匹配
+
+### 原始值包装类型
+使用原始值的方法或属性会在后台执行以下3步(通过string类型举例)：
+* 创建一个String类型的实例
+* 调用实例上的特定方法
+* 销毁实例
+引用类型与原始值类型的主要区别在于生命周期，一个在离开作用域时销毁，另一个在于访问它的那行代码执行期间，所以原始值不能添加属性和方法。(type 和 instanceof 用于检测)
+#### Boolean
+`new Boolean(true);`
+重写valueOf()、toString() 返或"true"和"false"
+#### Number
+`new Number()`
+valueOf()返回原始数值，toLocaleString()和toString()返回原始数值字符串。toString()方法可接收一个表示基数的参数，并返回相应基数形式的数值字符串。  
+**toFixed()** 返回指定小数点位数的字符串,如果小数位数超过则四舍五入。  
+**toExponential()** 返回科学计数法(也称指数计数法)的数值字符串。
+**toPrecision()** 会根据情况返回合理的输出结果
+**Number.isInteger(number)** 返回布尔值，判断一个数值是否为整数
+**Number.isSafeInteger(number)** 判断是否在数值的最大和最小范围
+```
+let num = 10;
+console.log(num.toFixed(2));   // "10.00"
+num.toExponential(1);         // "1.0e+1"
+num.toPrecision(1);           // "1e+2"    四舍五入100
+```
+### String
+`new String("hello world")`
+1. JavaScript 字符  
+有16位码元组成，每16位码元对应一个字符。  
+**chartAt()** 返回给定索引位置的字符。  
+**charCodeAt()** 返回指定索引位置的码元值。  
+**fromCharCode()** 接收任意数值，并返回所有数值对应的字符拼接的字符串。  
+为表示更多的字符，Unicode 采用一个策略，即每一个字符使用另外16位去选择一个**增补平面**。这种每一个字符用两个16位码元的策略称为**代理对**。  
+length和charAt()会出现问题。但fromCharCode()方法仍能返回正确结果，因为它基于提供的二进制表示直接组合成字符。  
+**codePointAt()** 接收16位码元的索引并返回该索引的码点。  
+**fromCodePoint()** 同样接收任意数量码点，返回对应字符串。  
+```
+String.fromCodePoint(0x1F60A);         // "😊"
+let message = "ab😊cd";               // length 为 6
+message.codePointAt(3);               // 56842
+```
+2. normalize()规范化
+4种规范形式：NFD、NFC、NFKD、NFKC。
+
+3. 字符串操作方法
