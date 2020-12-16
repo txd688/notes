@@ -121,10 +121,10 @@ test(string) 返回布尔值，是否匹配
 `new Number()`
 valueOf()返回原始数值，toLocaleString()和toString()返回原始数值字符串。toString()方法可接收一个表示基数的参数，并返回相应基数形式的数值字符串。  
 **toFixed()** 返回指定小数点位数的字符串,如果小数位数超过则四舍五入。  
-**toExponential()** 返回科学计数法(也称指数计数法)的数值字符串。
-**toPrecision()** 会根据情况返回合理的输出结果
-**Number.isInteger(number)** 返回布尔值，判断一个数值是否为整数
-**Number.isSafeInteger(number)** 判断是否在数值的最大和最小范围
+**toExponential()** 返回科学计数法(也称指数计数法)的数值字符串。  
+**toPrecision()** 会根据情况返回合理的输出结果  
+**Number.isInteger(number)** 返回布尔值，判断一个数值是否为整数  
+**Number.isSafeInteger(number)** 判断是否在数值的最大和最小范围  
 ```
 let num = 10;
 console.log(num.toFixed(2));   // "10.00"
@@ -136,12 +136,12 @@ num.toPrecision(1);           // "1e+2"    四舍五入100
 1. JavaScript 字符  
 有16位码元组成，每16位码元对应一个字符。  
 **chartAt()** 返回给定索引位置的字符。  
-**charCodeAt()** 返回指定索引位置的码元值。  
+**charCodeAt()** 返回指定索引位置的码元值。    
 **fromCharCode()** 接收任意数值，并返回所有数值对应的字符拼接的字符串。  
 为表示更多的字符，Unicode 采用一个策略，即每一个字符使用另外16位去选择一个**增补平面**。这种每一个字符用两个16位码元的策略称为**代理对**。  
 length和charAt()会出现问题。但fromCharCode()方法仍能返回正确结果，因为它基于提供的二进制表示直接组合成字符。  
-**codePointAt()** 接收16位码元的索引并返回该索引的码点。  
-**fromCodePoint()** 同样接收任意数量码点，返回对应字符串。  
+**codePointAt()** 接收16位码元的索引并返回该索引的码点。   
+**fromCodePoint()** 同样接收任意数量码点，返回对应字符串。    
 ```
 String.fromCodePoint(0x1F60A);         // "😊"
 let message = "ab😊cd";               // length 为 6
@@ -151,3 +151,61 @@ message.codePointAt(3);               // 56842
 4种规范形式：NFD、NFC、NFKD、NFKC。
 
 3. 字符串操作方法
+**concat()** 接收任意数量字符，拼接字符串。  
+**slice()** 第一个参数开始位置，第二个参数结束位置。会正常取值。  
+**substring()** 第一个参数开始位置，第二个参数结束位置。如果存在负数会转为0.  
+**substr()** 第一个参数开始位置，第二个参数字符串数量。如果第一个为负数会往后取，第二个负数转为0。  
+
+4. 字符串位置方法
+搜索指定字符串，第二个参数是开始位置  
+**indexOf()** 从开头开始  
+**lastIndexOf()** 从末尾开始（如果指定第二个参数，会从该位置向字符串开头进行查找）
+
+5. 字符串包含方法
+**endsWith()** 是否是该字符串开头  
+**startWith()** 是否是该字符串结尾  
+**includes()** 搜索整个字符串  
+第二个参数是从哪开始
+
+6. trim()方法
+删除前后空格
+
+7. repeat()方法
+接收一个整数参数，表示要复制多少次。
+
+8. padStart()和padEnd()方法
+第一个参数是长度，第二个参数是填充的字符串。默认为空格。小于长度的时候填充。
+
+9. 字符串迭代与解构
+暴露@@iterator方法，可以迭代每个字符。
+```
+let message = "abc";
+let stringIterator = message[Symbol.iterator]();
+stringIterator.next()      // {value: "a", done: false}
+stringIterator.next()      // {value: "b", done: false}
+stringIterator.next()      // {value: "c", done: false}
+stringIterator.next()      // {value: undefined, done: true}
+
+for (const c of message){
+  console.log(c);
+ }
+ 
+ [...message];
+```
+
+10. 字符串大小写转换
+toUpperCase()  
+toLocaleUpperCase() 在特定地区使用特定的方法实现转换  
+toLowerCase()  
+toLocaleLowerCase()
+
+11. 字符串模式匹配方法
+**match()** 参数是一个正则表达式字符串，也可以是RegExp对象(与exec()相同)。  
+**search()** 参数与上述相同，如果没找到返回-1；  
+**replace()**  
+**split()**  分割字符串，第二个参数返回指定数量
+
+12. localeCompare()方法
+
+### 单例内置对象
+
