@@ -222,9 +222,10 @@ toLocaleLowerCase()
 `eval("console.log('h1')");`  
 接收参数字符串，解释为实际的js语句。
 
-3. Global 对象属性
-|  属性  |  说明  |
-|--------|-------|
+3. Global 对象属性  
+
+|  属性   | 说明  |
+|  ----  | ----  |
 | undefined | 特殊值undefined |
 | NaN | 特殊值NaN |
 | Infinity | 特殊值 |
@@ -248,9 +249,10 @@ toLocaleLowerCase()
 4. window 对象
 虽然无法直接访问Global 对象，但windown对象实现为Global对象的代理。所以全局作用域中声明变量和函数都变成了window的属性。
 
-5. Math
-| 属性 | 说明 |
-|------| ------|
+5. Math  
+
+|  属性   | 说明  |
+|  ----  | ----  |
 | Math.E | 自然对数的基数e的值 |
 | Math.LN10 | 10为底的自然对数 |
 | Math.LN2 | 2为底的自然对数 |
