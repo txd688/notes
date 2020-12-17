@@ -209,3 +209,81 @@ toLocaleLowerCase()
 
 ### 单例内置对象
 
+#### Golbal
+1. URL 编码方法
+**encodeURI()**  
+**encodeURIComponent()**  
+对于url进行编码。区别：第一个不会对特殊字符编码转义(比如冒号、斜杠、问号、井号)，第二个所有进行编码。
+**decodeURI()**    
+**decodeURIComponent()**  
+相对于上面进行解码
+
+2. eval()方法
+`eval("console.log('h1')");`  
+接收参数字符串，解释为实际的js语句。
+
+3. Global 对象属性
+|  属性  |  说明  |
+|--------|-------|
+| undefined | 特殊值undefined |
+| NaN | 特殊值NaN |
+| Infinity | 特殊值 |
+| Object  | Object的构造函数 |
+| Array | Array的构造函数 |
+| Function | ..构造函数 |
+| Boolean | ... |
+| String | ... |
+| Number | ... |
+| Date | ... |
+| RegExp | ... |
+| Error | ... |
+| EvalError | ... |
+| RangeError | ... |
+| ReferenceError | ... |
+| SyntaxError | ... |
+| TypeError | ... |
+| URIError | ... |
+| Symbol | 伪构造函数 |
+
+4. window 对象
+虽然无法直接访问Global 对象，但windown对象实现为Global对象的代理。所以全局作用域中声明变量和函数都变成了window的属性。
+
+5. Math
+| 属性 | 说明 |
+|------| ------|
+| Math.E | 自然对数的基数e的值 |
+| Math.LN10 | 10为底的自然对数 |
+| Math.LN2 | 2为底的自然对数 |
+| Math.LOG2E | 以2为底的自然对数 |
+| Math.PI | pai的值 |
+| Math.SQRT1_2 | 1/2的平方根 |
+| Math.SQRT2 | 2的平方根 |
+| Math.max() | 接收任意数量参数，求最大值 |
+| Math.min() | 求最小值 |
+| Math.ceil() | 向上取整数 |
+| Math.floor() | 向下去整数 |
+| Math.round() | 四舍五入 |
+| Math.fround() | 返回数值最接近的单精度(32位)浮点值表示 |
+| Math.random() | 返回0-1范围内的随机数 |
+| Math.abs(x) | 返回x的绝对值 |
+| Math.exp(x) | 返回Math.E的x次幂 |
+| Math.expml(x) | 等于Math.exp(x)-1 |
+| Math.log(x) | 返回x的自然对数 |
+| Math.loglp(x) | 等于1+Math.log(x) |
+| Math.pow(x,power) | 返回x的power次幂 |
+| Math.pow(...nums) | 返回nums中的每个数平方和的平方根 |
+| Math.clz32(x) | 返回32位整数x的前置零的数量 |
+| Math.sign(x) | 返回表示x符号的1、0、-0或-1 |
+| Math.trunc(x) | 返回x的整数部分，删除所有小数 |
+| Math.sqrt(x) | 返回x的平方根 |
+| Math.cbrt(x) | x的立方根 |
+| Math.acos(x) | x的反余弦 |
+| Math.acosh(x) | x的反双曲正弦 |
+| Math.asin(x) | x的反正弦 |
+| Math.asinh(x) | x的反双曲正弦 |
+| Math.atan(x) | x的反正切 |
+| Math.atanh(x) | x的反双曲正弦 |
+| Math.atan2(y,x) | 返回y/x的反正切 |
+| Math.cos(x) | x的余弦 |
+| Math.sin(x) | x的正弦 |
+| Math.tan(x) | x的正切 |
