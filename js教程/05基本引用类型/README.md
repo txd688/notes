@@ -2,7 +2,7 @@
 引用值（或者对象）是某个特定引用类型的实例。
 
 ### Date
-创建日期对象
+创建日期对象  
 `let now = new Date();`
 #### Date.parse() 和 Date.UTC() (会被隐式调用)
 Date.parse()接收一下格式：
@@ -16,7 +16,7 @@ new Date(Date.parse("May 23, 2019"));
 new Date("May 23,2019");
 ```
 
-Date.UTC()支持参数：年、零起点月数、日、时、分、秒和毫秒
+Date.UTC()支持参数：年、零起点月数、日、时、分、秒和毫秒  
 `new Date(Date.UTC(2005, 4, 5, 17, 55, 55));//GMT时间2005年5月5日下午5点55分55秒`
 
 #### 继承的方法
@@ -73,8 +73,8 @@ b.toUTCString()          // "Wed, 22 May 2019 16:00:00 GMT"
 | getTimezoneOffset()  | 返回以分钟计的UTC与本地时区的偏移量 |
 
 ### RegExp
-`let expression = /pattern/flags;`
-匹配模式的标记(flag)(可以带零个或多个)
+`let expression = /pattern/flags;`  
+匹配模式的标记(flag)(可以带零个或多个)  
 | 模式 | 作用 |
 |------|------|
 | g    | 全局模式，找到所有匹配内容 |
@@ -104,7 +104,7 @@ let pattern = new RegExg("\\[bc\\]at","i");
 pattern.flags;    // "i"
 ```
 
-#### 实例方法
+#### 实例方法 
 exec(string) 用于配合捕获组使用。  
 test(string) 返回布尔值，是否匹配
 
@@ -219,7 +219,7 @@ toLocaleLowerCase()
 相对于上面进行解码
 
 2. eval()方法
-`eval("console.log('h1')");`  
+`eval("console.log('h1')");`    
 接收参数字符串，解释为实际的js语句。
 
 3. Global 对象属性  
