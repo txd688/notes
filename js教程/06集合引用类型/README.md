@@ -177,7 +177,7 @@ sum;         // 10
 ```
 
 ### 定型数组
-...
+暂时跳过...
 
 ### Map
 需要包含键/值对数组。
@@ -251,3 +251,49 @@ const wm1 = new WeakMap({
 });
 ```
 #### 弱键
+**WeakMap** 键只能是对象，键如果没有被其他引用会被垃圾回收，所以没有迭代和clear()  
+```
+// 实现私有变量
+const User = (()=>{
+    const wm = new WeakMap();
+    class User{
+        constructor(id){
+            this.idProperty = Symbol('id');
+            this.setId(id);
+        }
+        setId(id){
+            this.setPrivate(this.idProperty,id);
+        }
+        setPrivate(pro, val){
+            const privateMembers = wm.get(this) || {};
+            privateMembers[pro] = val;
+            wm.set(this,privateMembers);
+        }
+        getId(){
+            return this.getPrivate(this.idProperty);
+        }
+        getPrivate(property){
+            return wm.get(this)[property];
+        }
+    }
+    return User;
+})();
+const user = new User(123);
+user.getId();           // 123
+user.setId(456);
+user.getId();           // 456
+
+//适合Dom节点元数据
+const m = new Map();
+const loginButton = document.querySelector("#login");
+m.set(loginButton, {disabled: true});
+//如果按钮从DOM树中删除，但由于映射中还保存着按钮引用，仍会逗留在内存，除非明确将其删除或者映射本身被销毁，可改成如下：
+const m = new WeakMap();
+const loginButton = document.querySelector("#login");
+m.set(loginButton, {disabled: true});
+```
+
+### Set
+与map类似
+### WeakSet
+与weakMap类似
