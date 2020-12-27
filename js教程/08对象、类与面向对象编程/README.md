@@ -190,3 +190,156 @@ let person = {
 
 #### 对象解构
 可以在一条语句中使用嵌套数据实现一个或多个赋值操作。就是使用与对象匹配结构来实现对象属性赋值。
+```
+let person = {
+  name: 'Matt',
+  age: 27
+};
+let {name: personName, age: personAge} = person;
+//等同于 简写
+let {name, age} = person;
+let {name, job="writer"} = person;        // 也可以给默认值，如果没有，则为undefined
+```
+解构在内部使用函数ToObject()把源数据结构转化为对象，也就是原始值会被当成对象。如果是null 和 undefined不能被结构，否则会抛出错误。
+```
+let { length } = 'foobar';       
+console.log(length);          // 6
+```
+解构如果是变量必须声明，或者包含在一对括号中。
+```
+ler personName, personAge;
+let person = {
+  name: 'Matt',
+  age: 27
+};
+({name:personName, age: personAge} = person);
+```
+嵌套解构
+```
+let person = {
+  name: 'Matt',
+  age: 27,
+  job: {
+    title: 'Software'
+  }
+};
+let personCopy = {}
+({
+  name: personCopy.name,
+  age: personCopy.age,
+  job: personCopy.job
+} = person);
+// 引用赋值，如果修改会一起修改。
+// 或者
+let { job: {title} } = person;
+
+// 在外层属性没有定义的情况下不能使用嵌套。无论是源对象还是目标对象都一样。
+// 如果后面赋值错误，只会解构前面成功的，是部分解构。
+```
+
+### 创建对象
+
+#### 工厂模式
+```
+function createPerson(name, age, job){
+  let o = new Ojbect();
+  o.name = name;
+  o.age = age;
+  o.job = job;
+  o.sayName = function(){
+    console.log(this.name);
+    
+  };
+  return o;
+}
+let person1 = createPerson("Admin", 29, "writer");
+let person2= createPerson("Cidy", 20, "doctor");
+```
+解决了创建多个类型对象的问题，但没有解决对象标识问题(即新创建对象是什么类型)；
+#### 构造函数模式
+```
+function Person(name, job, age){
+  this.name = name;
+  this.job = job;
+  this.age = age;
+  this.sayName = function(){
+    console.log(this.name);
+  }
+}
+let person1 = new Person("Admin", 29, "writer");
+let person2= new Person("Cidy", 20, "doctor");
+```
+Person() 构造函数代替了createPerson()工厂函数。   
+区别：
+* 没有显式地创建对象。
+* 属性和方法直接赋值给了this。
+* 没有return。
+要创建Person实例，应使用new操作符。以这种方式调用构造函数会执行如下操作：
+* 在内存中创建一个新对象
+* 这个新对象内部的\[\[Prototype]]特性被赋值为构造函数的prototype属性
+* 构造函数内部的this被赋值为这个新对象。(即this指向新对象)
+* 执行构造函数内部的代码(给新对象添加属性)。
+* 如果构造函数返回非空对象，则返回该对象；否则返回刚创建的新对象。
+上面person1和person2分别保存着Person不同实例，但都有一个constructor属性指向Person,如下所示：
+```
+console.log(person1.constructor == Person);      // true
+console.log(person2.constructor == Person);      // true
+```
+constructor 本来是用于标识对象类型的。不过一般认为instanceof操作符值确定对象类型更可靠的方式。  
+构造函数不仅可以写成函数声明形式，也可以写成函数表达式。
+```
+let Person = function(name, age, job){
+  ...
+}
+```
+1. 构造函数也是函数
+与普遍函数区别：是否调用new操作符。否则为普通函数。
+```
+//作为构造函数
+let person1 = new Person("Admin", 29, "writer");
+person.sayName();
+
+//作为函数调用
+Person("Greg", 27, "docutor");
+window.sayName();
+
+//在另外一个对象的作用域中调用
+let o = new Object();
+person.call(o,"Greg", 27, "docutor");
+o.sayName();
+```
+2. 构造函数的问题
+其定义的方法会在每一个实例上都创建一遍。比如person1 和 person2都有名为sayName()方法，但这两个方法不是同一个Function实例。
+可以通过以下方式解决，但是全局作用域也被搞乱。
+```
+function Person(name, job, age){
+  this.name = name;
+  this.job = job;
+  this.age = age;
+  this.sayName = sayName;
+}
+function sayName(){
+  console.log(this.name);
+}
+```
+#### 原型模式
+每个函数都会创建一个prototype属性，这个属性是一个对象，包含应该由特定引用类型的实例共享的属性和方法，实现属性和方式的共享。
+```
+function Person(){}
+Person.prototype.name = "Bob";
+Person.prototype.age = 27;
+Person.prototype.job = "docoter";
+Person.prototype.sayName = function(){
+  console.log(this.name);
+};
+let person1 = new Person();
+person1.sayName();   // "Bob"
+
+let person2 = new Person();
+person2.sayName();   // "Bob"
+person1.sayName() == person2.sayName();       // true
+```
+这里的属性和sayName()方法都直接添加到了Person的prototype属性上，构造函数体中什么也没有。
+1. 理解原型
+无论何时，只要创建一个函数，就会按照特定的规则为这个函数创建一个prototype属性(指向原型对象)。默认情况下，所有原型对象自动获得一个名为constructor的属性，指向与之关联的构造函数。如前面,Person.prototype.constructor指向Person,然后因构造函数而异，可能会给原型对象添加其他属性和方法。  
+在自定义构造函数时，原型对象默认只会获得constructor属性，其他的所有方法都继承自Object。每次调用构造函数创建一个新实例
