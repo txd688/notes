@@ -2,10 +2,10 @@
 #### 属性分为：数据属性和访问器属性。
 1. 数据属性
 报错数据值的位置。值会从这个位置读取，也会写入到这个位置。有4个特性。
-* [[Configurable]]:表示属性是否可以通过delete删除并重新定义，是否可以修改它的特性，以及是否可以把它改成访问器属性。默认为true。
-* [[Enumberable]]:表示属性是否可以通过for-in循环返回。默认为true。
-* [[Writable]]:表示属性的值是否可以被修改。默认为true。
-* [[Value]]:包含属性实际的值。默认为undefined。
+* \[\[Configurable]]:表示属性是否可以通过delete删除并重新定义，是否可以修改它的特性，以及是否可以把它改成访问器属性。默认为true。
+* \[\[Enumberable]]:表示属性是否可以通过for-in循环返回。默认为true。
+* \[\[Writable]]:表示属性的值是否可以被修改。默认为true。
+* \[\[Value]]:包含属性实际的值。默认为undefined。
 修改属性的默认特性使用`Object.defineProperty()`方法。接收3个参数：属性对象、属性名称、一个描述符对象。最后一个描述符对象其实是上面4个特性。
 ```
 let person = {};
@@ -20,10 +20,10 @@ console.log(perpson.name);     // "Nicholas"
 如果设置了`configurable`为false，那么该属性不能从对象上删除，变成不可配置，再也不能变回可配置的了。
 2. 访问器属性
 不包含数值。包含一对getter和setter函数。访问器属性不能直接定义，要通过Object.defineProperty()这个方法来定义。
-* [[Configurable]]:表示属性是否可以通过delete删除并重新定义，是否可以修改它的特性，以及是否可以把它改成访问器属性。默认为true。
-* [[Enumberable]]:表示属性是否可以通过for-in循环返回。默认为true。
-* [[Get]]:获取函数。在读取属性时调用。
-* [[Set]]:设置函数。在写入属性时调用。
+* \[\[Configurable]]:表示属性是否可以通过delete删除并重新定义，是否可以修改它的特性，以及是否可以把它改成访问器属性。默认为true。
+* \[\[Enumberable]]:表示属性是否可以通过for-in循环返回。默认为true。
+* \[\[Get]]:获取函数。在读取属性时调用。
+* \[\[Set]]:设置函数。在写入属性时调用。
 ```
 //包含私有属性year_ 和公共成员 edition
 let book = {
@@ -342,4 +342,90 @@ person1.sayName() == person2.sayName();       // true
 这里的属性和sayName()方法都直接添加到了Person的prototype属性上，构造函数体中什么也没有。
 1. 理解原型
 无论何时，只要创建一个函数，就会按照特定的规则为这个函数创建一个prototype属性(指向原型对象)。默认情况下，所有原型对象自动获得一个名为constructor的属性，指向与之关联的构造函数。如前面,Person.prototype.constructor指向Person,然后因构造函数而异，可能会给原型对象添加其他属性和方法。  
-在自定义构造函数时，原型对象默认只会获得constructor属性，其他的所有方法都继承自Object。每次调用构造函数创建一个新实例
+在自定义构造函数时，原型对象默认只会获得constructor属性，其他的所有方法都继承自Object。最主要的是：*实例与构造函数原型之间有直接联系，实例和构造函数之间没有联系*
+```
+function Person(){}
+Person.prototype.constructor === Person;      // true
+Person.prototype.__proto__ === Object.prototype;   // true
+Person.prototype.__proto__.constructor === Object;    // true
+person.prototype.__proto__.__proto__ === null;       // true
+
+let person1 = new Person();
+person1.__proto__ === Person.prototype;   // true
+person1.__proto__.constructor === Person;    // true
+
+// instanceof检查实例的原型链中是否包含指定构造函数的原型 
+person1 instanceof Person;       // true
+person1 instanceof Object;       // true
+Person.prototype instanceof Object;     // true
+```
+>提示： \_\_proto__ 是历史遗留属性，实际上是基于 \[\[Prototype]]的访问器属性（getter/setter）。它是因为历史原因而保留下来的。现在可以使用 Object.getPrototypeOf/Object.setPrototypeOf 方式替代直接操作 \_\_proto__，用来获取和设置原型。  
+可以使用`isPrototypeOf()`方法确定两个对象关系：判断指定对象object1是否存在于另一个对象object2的原型链中，是则返回true，否则返回false。    
+`Person.prototype.isPrototypeOf(person1); // true`  
+`Object.getPrototypeOf()`方法返回参数内部特性\[\[Prototype]]的值。
+`Object.getPrototypeOf(person1) === Person.prototype;   // true`  
+`setPrototypeOf()`方法可以先实例的私有特性\[\[Prototype]]写入一个新值。
+```
+let bieped = {
+  numLegs: 2
+};
+let person = {
+  name: 'Matt'
+};
+Object.setPrototypeOf(person, biped);
+person.name;    // Matt
+person.numLegs;    // 2
+Object.getPrototypeOf(person) === biped;  // true
+```
+但这个方法会造成性能下架，可以通过`Object.create()`来创建一个新对象，同时为其指定原型：
+```
+let biped = {
+  numLegs: 2
+};
+let person = Object.create(biped);
+person.name = 'Matt';
+person.name;    // Matt
+person.numLegs;    // 2
+Object.getPrototypeOf(person) === biped;  // true
+```
+
+2. 原型层级
+在通过对象访问属性时，会先搜索对象实例本身，如果未找到，则沿着指针进入原型对象查找。  
+同样在对象实例上修改属性，只会在实例上创建这个属性，从而实现**遮蔽**原型对象上的属性。可以通过`delete`操作符完全删除实例上的这个属性，从而使标识符解析过程中继续搜索原型对象。  
+`hasOwnPrototype()`方法用于确定某个属性是在实例上还是在原型对象上。
+```
+function Person(){}
+Person.prototype.name = 'Nicholas';
+let person1 = new Person();
+person1.hasOwnPrototype('name');    // false  来自原型
+person.age  = 27;
+person1.hasOwnPrototype('age');    // true    来自实例
+```
+
+3. 原型和in操作符
+有两种方式使用in：单独使用和for-in循环中使用。在单独使用时，in操作符会在可以通过对象访问指定属性时返回true，无论该属性在实例上或者在原型上。
+```
+//代码连接上面
+'name' in person1;       // true
+//可以使用这两个，判断该属性在原型上还是在实例上
+function hasPrototypeProperty(object,name){
+  return !Object.hasOwnProperty(name) && (name in Object);
+}
+//如果in返回true，hasOwnProperty()返回false，则说明该属性在原型上。
+```
+
+4. 属性枚举顺序
+`for-in`:顺序不确定；返回可枚举的实例属性和原型属性。  
+`Ojbect.keys()`:顺序不确定；返回可枚举的实例属性。  
+`Ojbect.getOwnPropertyNames()`:顺序确定；无论是否可枚举的，都返回实例属性。  
+`Object.getOwnPropertySymbols()`:顺序确定；只针对符号。    
+`Ojbect.assign()`:顺序确定；
+
+#### 对象迭代
+`Object.values()`：返回对象值的数组。  
+`Object.entries`：返回键/值对的数组。  
+>注意：非字符串属性会被转换为字符串输出。符号属性会被忽略。
+1. 其他原型语法
+```
+
+```
