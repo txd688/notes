@@ -324,6 +324,7 @@ function sayName(){
 ```
 #### 原型模式
 每个函数都会创建一个prototype属性，这个属性是一个对象，包含应该由特定引用类型的实例共享的属性和方法，实现属性和方式的共享。
+
 ```
 function Person(){}
 Person.prototype.name = "Bob";
@@ -339,10 +340,12 @@ let person2 = new Person();
 person2.sayName();   // "Bob"
 person1.sayName() == person2.sayName();       // true
 ```
+
 这里的属性和sayName()方法都直接添加到了Person的prototype属性上，构造函数体中什么也没有。
 1. 理解原型
 无论何时，只要创建一个函数，就会按照特定的规则为这个函数创建一个prototype属性(指向原型对象)。默认情况下，所有原型对象自动获得一个名为constructor的属性，指向与之关联的构造函数。如前面,Person.prototype.constructor指向Person,然后因构造函数而异，可能会给原型对象添加其他属性和方法。  
 在自定义构造函数时，原型对象默认只会获得constructor属性，其他的所有方法都继承自Object。最主要的是：*实例与构造函数原型之间有直接联系，实例和构造函数之间没有联系*
+
 ```
 function Person(){}
 Person.prototype.constructor === Person;      // true
@@ -359,12 +362,15 @@ person1 instanceof Person;       // true
 person1 instanceof Object;       // true
 Person.prototype instanceof Object;     // true
 ```
->提示： \_\_proto__ 是历史遗留属性，实际上是基于 \[\[Prototype]]的访问器属性（getter/setter）。它是因为历史原因而保留下来的。现在可以使用 Object.getPrototypeOf/Object.setPrototypeOf 方式替代直接操作 \_\_proto__，用来获取和设置原型。  
+
+> 提示： \_\_proto__ 是历史遗留属性，实际上是基于 \[\[Prototype]]的访问器属性（getter/setter）。它是因为历史原因而保留下来的。现在可以使用 Object.getPrototypeOf/Object.setPrototypeOf 方式替代直接操作 \_\_proto__，用来获取和设置原型。  
+
 可以使用`isPrototypeOf()`方法确定两个对象关系：判断指定对象object1是否存在于另一个对象object2的原型链中，是则返回true，否则返回false。    
 `Person.prototype.isPrototypeOf(person1); // true`  
 `Object.getPrototypeOf()`方法返回参数内部特性\[\[Prototype]]的值。
 `Object.getPrototypeOf(person1) === Person.prototype;   // true`  
 `setPrototypeOf()`方法可以先实例的私有特性\[\[Prototype]]写入一个新值。
+
 ```
 let bieped = {
   numLegs: 2
@@ -426,6 +432,258 @@ function hasPrototypeProperty(object,name){
 `Object.entries`：返回键/值对的数组。  
 >注意：非字符串属性会被转换为字符串输出。符号属性会被忽略。
 1. 其他原型语法
+为了减少代码冗余，视觉上更好的封装原型功能，可以通过一个包含所有属性和方法的对象字面量来重写原型。
+```
+function Person(){}
+Person.prototype = {
+  name: 'Admin',
+  age: 29,
+  job: 'writer',
+  sayName(){
+    console.log(this.name);
+  }
+}
+```
+但是这样重写后Person.prototype的constructor属性就不指向Person了,而指向了Ojbject构造函数。虽然instanceof操作符可以正确返回，但是不能通过constructor属性识别标识了。
+```
+let friend = new Person();
+console.log(friend instanceof Object);          // true
+console.log(friend instanceof Person);          // true
+console.log(friend.constructor == Object);      // true
+console.log(friend.constructor == Person);      // false
+```
+如果constructor很重要，可以再重写原型对象是专门设置一它的值：
+```
+function Person(){}
+Person.prototype = {
+  constructor: Person,
+  name: 'Admin',
+  age: 29,
+  job: 'writer',
+  sayName(){
+    console.log(this.name);
+  }
+}
+// 但是通过这方式恢复constructor属性会创建一个[[Enumerable]]为true的属性，而原生的是不可以枚举的。可以使用Object.defineProperty()方法定义constructor属性。
+Object.definePropertype(Person.prototype,"constructor",{
+  enumerable: false,
+  value: Perosn
+});
 ```
 
+2. 原型的动态性
+从原型上搜索值是动态的。
 ```
+let frined = new Person();
+Person.prototype.sayHi = function(){
+  console.log('hi');
+}
+```
+即使实例在修改原型之前已经存在，任何时候对原型对象所做的修改都会在实例上反映出来。   
+
+重写整个原型会切断最初原型与构造函数的联系，但实例引用的仍然是最初的原型。(实例只有指向原型的指针，没有指向构造函数的指针)如下：
+```
+function Person(){}
+let frined = new Person();
+Person.prototype = {
+  constructor: Person,
+  name: 'Bob',
+  age:29
+}
+frined.age;    // 错误
+```
+重写构造函数上的原型之后再创建的实例才会引用新的原型。而在此之前创建的实例仍然会引用最初的原型。  
+  
+3. 原型对象原型
+例子：给String原型值包装类型的实例添加一个startsWith()方法：
+```
+String.prototype.startsWith = function(text){
+  return this.indexOf(text) == 0;
+};
+let mes = 'Hello world';
+console.log(mes.startsWith('Hello'));   // true
+```
+在读取mes时会自动创建String的包装实例，从而找到并调用startsWith()方法。
+
+4. 原型的问题
+正因为是共享的，在处理引用值(数组、对象)的时候，一个实例对其修改后，也会影响的其他实例。
+
+### 继承
+
+#### 原型链
+通过原型继承多个引用类型的属性和方法。
+```
+function Super(){
+  this.property = true;
+}
+Super.prototype.getSuperValue = function(){
+  return this.property;
+}
+
+function Demo(){
+  this.sub = false;
+}
+Demo.prototype = new Super();
+Demo.prototype.getDemoValue = function(){
+  return this.sub;
+}
+let instance = new Demo();
+console.log(instance.getSuperValue());        // true
+```
+instanceof() 和 isPrototypeOf()两种方法可以确定原型与实例的关系。
+问题：还是引用值的问题，还有一种是：子类型在实例化时不能给父类型的构造函数传参。
+
+#### 盗用构造函数
+为了解决原型包含引用值导致的继承问题。思路：在自雷构造函数调用父类构造函数。call()和apply();
+```
+function SuperType(){
+  this.colors = ['red','blue','green'];
+}
+function Demo(){
+  SuperType.call(this); 、、 继承SuperType
+}
+let instance = new Demo();
+instance.colors.push('yellow');
+console.log(instance.colors);       // ['red','blue','green','yellow'];
+
+let instance2 = new Demo();
+instance2.colors;                   // ['red','blue','green'];
+```
+这相当于在Demo对象上运行了SuperType()函数中的初始化代码。
+
+1. 传递参数
+相比于原型链，盗用构造函数还可以再子类构造函数中向父类构造函数传参。
+```
+function SuperType(name){
+  this.name = name;
+}
+funciton Demo(){
+  SuperType.call(this,'Bob');
+  this.age = 27;   // 实例属性
+}
+let instance = new Demo();
+console.log(instance.name);       // 'Bob'
+```
+2. 盗用构造函数的问题
+同样也是构造函数模式自定义类型的问题：必须在构造函数中定义方法，因此函数不能重用。此外，子类也不能访问父类原型上定义的方法，因此所有类型只能使用构造函数模式。
+
+#### 组合继承
+也叫伪经典继承。思路：使用原型链继承原型上的属性和方法，而通过盗用构造函数继承实例属性。
+```
+function SuperType(name){
+  this.name = name;
+  this.colors = ['red','blue','green'];
+}
+SuperType.prototype.sayName = function(){
+  console.log(this.name);
+}
+
+function Demo(name,age){
+  SuperType.call(this,name);
+  this.age = age;
+}
+Demo.prototype = new SuperType();
+Demo.prototype.sayAge = function(){
+  console.log(this.age);
+}
+
+let instance1 = new Demo('Bob',27);
+instance1.colors.push('yellow');
+console.log(instance1.colors);      // ['red','blue','green','yello'];
+instance1.sayName();                // 'Bob'
+instance1.sayAge();                 // 27;
+
+let instance2 = new Demo('Greg',29);
+console.log(instance2.colors);     // ['red','blue','green'];
+instance2.sayName();               // 'Greg'
+instance2.sayAge();                // 29
+```
+
+#### 原型式继承
+即使不自定义类型也可以通过原型实现对象之间的信息共享。
+```
+function object(o){
+  function F(){}
+  F.prototype = o;
+  return new F();
+}
+```
+原型式继承非常适合不需要单独创建构造函数，但仍然需要在对象之间共享信息的场合。但记住，属性中包含的引用值始终会在相关对象间共享，跟使用原型模式一样。
+```
+let person = {
+  name: "Bob",
+  friends: ['Van','Cidy']
+};
+let p1 = object(person);
+p1.name = 'Greg';
+p1.friends.push('Rob');
+
+let p2 = object(person);
+p2.name = 'Linda';
+p2.friends.push('adgn');
+
+console.log(person.friends);         // ["Van", "Cidy", "Rob", "adgn"]   
+```
+
+es5通过Object.create()方法将原型式继承的概念规范化了。接收两个参数：作为新对象原型的对象，以及给新对象额外的属性的对象(可选)。在只有一个参数时，和object()方法效果相同。
+```
+let person = {
+  name: "Bob",
+  friends: ['Van','Cidy']
+};
+let p1 = Object.create(person);
+p1.name = 'Greg';
+p1.friends.push('Rob');
+
+let p2 = Object.create(person);
+p2.name = 'Linda';
+p2.friends.push('adgn');
+
+console.log(person.friends);         // ["Van", "Cidy", "Rob", "adgn"] 
+```
+
+#### 寄生式继承
+暂
+#### 寄生式组合继承
+暂
+
+### 类
+#### 类定义
+```
+//类声明
+class Person{}
+//类表达式
+const Animal = class {};
+```
+与函数表达式不同，不会被提升。另一个与函数声明不同，函数受作用域限制，类受块作用域限制。  
+类可以包含：构造函数方法(constructor)、实例方法、获取函数(get)、设置函数(set)和静态类方法(static)。
+
+#### 类构造函数
+constructor 关键字用于在类定义内部创建类的构造函数。会告诉解释器在使用new操作符创建类的新实例时，应该调用这个函数。
+1. 实例化
+使用new调用类的构造函数会执行如下操作：
+* 在内存中创建一个新对象
+* 这个新对象内部\[\[Prototype]]指针被赋值为构造函数的prototype属性。
+* 构造函数内部的this被赋值为这个新对象。
+* 执行构造函数内部的代码(给新对象添加属性)。
+* 如果构造函数返回非空对象，则返回该对象；否则，返回刚创建的新对象。
+```
+class Person{
+  constructor(){
+    this.color = 'orange';
+  }
+}
+let person = new Person();
+```
+默认情况下,类构造函数执行之后会返回this对象，如果返回其他对象，则instanceof操作符则检测不出关联。  
+
+类构造函数与构造函数的主要区别：调用类构造函数必须使用new操作符。而普通构造函数如果不是用new，会用全局的this作为内部对象。如果类不加new，则抛出错误。    
+类构造函数实例化之后，会成为普通的实例方法。因此，实例化之后可以再实例上引用它：
+```
+class Person{}
+let p1 = new Person();
+p1.constructor();      //Uncaught TypeError: Class constructor Person cannot be invoked without 'new'
+let p2 = new p1.constructor();
+```
+
+2. 把类当成特殊函数
