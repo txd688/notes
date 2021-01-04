@@ -687,3 +687,174 @@ let p2 = new p1.constructor();
 ```
 
 2. 把类当成特殊函数
+```
+class Person{};
+console.log(typeof Person);        // function
+```
+所以类标签符有prototype属性，而这个原型也有一个constructor属性指向类自身；
+```
+class Person{}
+console.log(Person.prototype);          // {constructor: ƒ}
+console.log(Person === Person.prototype.constructor);        // true
+
+let p1 = new Person();
+console.log(p1.constructor === Person);           // true
+console.log(p1 instanceof Person);                // true
+console.log(p1 instanceof Person.constructor);    // flase
+let p2 = new Person.constructor();
+console.log(p2.constructor === Person);           // false
+console.log(p2 instanceof Person);                // false
+console.log(p2 instanceof Person.constructor);    // true
+```
+
+也可以像对象或函数引用一样把类作为参数传递。也可以立即实例化。
+
+#### 实例、原型和类成员
+1. 实例成员
+每次通过new调用类标识符，都会执行类构造函数(constructor())。在这个函数内部，可以为新创建的实例添加"自有"属性，是什么样的属性没有限制。  
+每个实例都对应一个唯一的成员对象，不会在原型上共享。
+2. 原型方法和访问器
+为了在实例间共享方法，类定义语法把类块中定义的方法作为原型方法。在类块中定义的所有方法都会定义在类的原型上。
+```
+class Person{
+  constructor(){
+    //实例上
+    this.locate = ()=>console.log('instance);    
+  }
+  locate(){
+    //原型上
+    console.log('prototype');
+  }
+}
+let p = new Person();
+p.locate();    // instance
+Person.prototype.locate();      // prototype
+```
+<类方法等同于对象属性，因此可以使用字符串、符号或计算的值作为键。  
+类定义也支持获取和设置访问器。
+```
+class Person{
+  set name(newName){
+    this.name_ = newName;
+  }
+  get name(){
+    return this.name_;
+  }
+}
+let p = new Person();
+p.name = 'Jake';
+console.log(p.name);     // Jake
+```
+
+3. 静态类方法
+这些方法通常用于不特定于实例的操作。每一个类只有一个静态成员。在静态成员中，this引用类自身。
+```
+class Person{
+  constructor(){
+    this.locate = ()=>console.log(this);
+  }
+  locate(){
+    console.log(this);
+  }
+  static locate(){
+    console.log(this);
+  }
+}
+let p = new Person();
+
+p.locate();        // Person {locate: ƒ}
+Person.prototype.locate();          // {constructor: ƒ, locate: ƒ}
+Person.locate();                    // class, class Person{...}
+
+// 静态类方法非常适合作为实例工厂：
+...
+static create(){
+  return new Person();
+}
+...
+Person.create()
+```
+
+4. 非函数原型和类成员
+虽然类不支持在原型或类上添加成员，但可以在类外部手动添加。
+```
+class Person{
+  sayName(){
+    console.log(`My name is ${this.name}`);
+  }
+}
+Person.prototype.name = 'Jack';
+let p = new Person();
+p.sayName();
+```
+
+5. 迭代器与生成器方法
+```
+class Person{
+    *createIterator(){
+        yield 'Jack';
+        yield 'Bob';
+    }
+}
+let p = new Person();
+let iterator = p.createIterator();
+iterator.next().value;                      // 'Jack'
+iterator.next().value;                      // 'Bob'
+iterator.next().value;                      // undefined
+
+class Person{
+    constructor(){
+        this.nicknames = ['jack','bob'];
+    }
+    *[Symbol.iterator](){
+        yield *this.nicknames.entries()
+    }
+}
+let p = new Person();
+for (let [idx,name] of p){
+    console.log(name);
+}
+// jack
+// bob
+```
+
+#### 继承
+1. 继承基础(extends)
+可以继承任何拥有\[\[Construct]]和原型的对象。不仅可以继承类，也可以继承构造函数。
+```
+class Person{}
+class p2 extends Person{}
+
+function text(){}
+class text2 extends text{}
+```
+
+2. 构造函数、HomeObject 和 super()
+super()关键点：
+* 只能在派生类构造函数和静态方法中使用。
+* 不能单独引用super关键字
+* 调用super()会调用父类构造函数，并将返回的实例赋值给this
+* super的行为如同调用构造函数。如果需要给父类构造函数传参，则需要手动添加
+* 如果没有定义类构造函数，在实例化派生类时会调用super，而且会传入所有传给派生类的参数
+* 在类构造函数中，不能在调用super()之前引用this
+* 如果在派生类中显式定义了构造函数，则要么必须在其中调用super，要么必须在其中返回一个对象。
+
+3. 抽象基类
+供其他类继承，但本身不会被实例。通过new.target实现，它保存通过new关键字调用的类或函数，检测是不是抽象基类，并阻止对抽象基类实例化。
+```
+class Person{
+  constructor(){
+    if(new.target == Person){
+      throw new Error('Person 不能被实例化');
+    }
+    
+    //这里也可以进行检测，要求派生类必须定义某个方法
+    if(this.foo){
+      throw new Error('foo() is define');
+    }
+  }
+}
+```
+4. 继承内置类型
+
+5. 类混入
