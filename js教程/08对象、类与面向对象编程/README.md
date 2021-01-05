@@ -856,5 +856,47 @@ class Person{
 }
 ```
 4. 继承内置类型
-
+```
+class SuperArray extends Array{
+  shuffle(){
+    //洗牌算法
+    for(let i = this.length-1;i >0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [this[i],this[j]]= [this[j],this[i]];
+    }
+  }
+}
+let a = new SuperArray(1,2,3,4,5);
+a.shuffle();
+```
 5. 类混入
+某种机制实现B继承A,C继承B，而Person再继承C。
+```
+class Vehicle{}
+let Foo = (Superclass) => class extends Superclass{
+  foo(){
+    console.log('foo');
+  }
+}
+let Bar = (Superclass) => class extends Superclass{
+  bar(){
+    console.log('bar');
+  }
+}
+let Baz = (Superclass) => class extends Superclass{
+  baz(){
+    console.log('baz');
+  }
+}
+class Bus extends Foo(Bar(Baz(Vehicle))){}
+let b = new Bus();
+b.foo();           // foo
+b.bar();           // bar
+b.baz();          // baz
+
+//也可以通过一个辅助函数，把嵌套调用展开
+function mix(baseClass, ...mixins){
+  return mixins.reduce((accu,current)=> current(accu), baseClass);
+}
+class Bus extends mix(Vehicle, Foo, Bar, Baz){}
+```
