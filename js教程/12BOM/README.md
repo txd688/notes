@@ -56,5 +56,6 @@ function moveWin(){
 CSS像素是Web开发中使用的同一像素单位。其实是一个角度：0.0213° 。在适配不同分辨率，物理像素与CSS像素之间的转换比率由`window.devicePixelRatio`属性提供，与每英寸像素数对应。  
 DPI 表示单位像素密度。而`window.devicePixelRatio`表示物理像素与逻辑像素之间的缩放系数。
 
-### 窗口大小
+#### 窗口大小
+123
 
