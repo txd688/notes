@@ -50,7 +50,7 @@ module.exports = {
     ]
   },
   plugins:[
-    new TerserPlugin(),
+    new TerserPlugin(),//打包优化
     new MiniCssExtractPlugin({
       filename:"styles.[contenthash].css",//分离出来css的文件名
     }),

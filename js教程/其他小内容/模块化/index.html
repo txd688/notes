@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- <script type="module">
+    import {sayHi} from './say.js';
+
+    document.body.innerHTML = sayHi('John');
+    //alert(import.meta.url)
+  </script> -->
+  <script>
+    // import('./say.js')
+    // .then(obj => console.log(obj.sayHi('jjj')))
+    // .catch(err =>err);
+
+    async function load() {
+      let {sayHi} = await import('./say.js');
+      console.log(sayHi(1231));
+    }
+    load();
+  </script>
+</head>
+<body>
+  
+</body>
+</html>
