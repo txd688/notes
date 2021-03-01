@@ -33,3 +33,15 @@ webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的
 ### 在 webpack.config.js 中配置 plugins
 * cnpm install terser-webpack-plugin --save-dev 该插件可以打包优化，减小包的大小（new TerserPlugin()）
 * cnpm i mini-css-extract-plugin --save=dve 分离css(原本写在index.html 的head中，把它分离成另外的css文件)
+* cnpm install --save-dev clean-webpack-plugin 在打包之前清除打包目录下的所有文件
+* cnpm i --save-dev html-webpack-plugin 打包自动生成html文件
+
+### 配置开发环境和生产环境
+* 分别创建了webpack.dev.config.js 和 webpack.production.config.js 文件管理这两个不同环境
+* config.js 文件中的 mode 设置为相对于的环境
+* package.json 配置了打包的方法(dev 和 build)。
+* 可以通过 process.env.NODE_ENV 识别是哪个环境
+
+### 开发服务器(devServer)
+* npm install webpack-dev-server --save-dev
+在 package.json 的dev中添加 serve ，在dev.config.js 添加对应端口（devServer）

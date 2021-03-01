@@ -1,13 +1,11 @@
 const path = require("path");  // 该模块系统提供，不需要安装
-const TerserPlugin = require("terser-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry:"./src/index.js", // 需要打包文件(跟它有关的东西都会打包)
   output:{
-    filename:"bundle.[contenthash].js", // 打包后的名字
+    filename:"bundle.js", // 打包后的名字
     path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
     publicPath:"auto",//图片路径, 或者 "/dist/"
   },
@@ -25,15 +23,15 @@ module.exports = {
       {
         test:/\.css$/,
         use:[
-          // "style-loader","css-loader"
-          MiniCssExtractPlugin.loader,"css-loader"
+          "style-loader","css-loader"
+          //MiniCssExtractPlugin.loader,"css-loader"
         ]
       },
       {
         test:/\.scss$/,
         use:[
-          // "style-loader","css-loader","sass-loader"
-          MiniCssExtractPlugin.loader,"css-loader","sass-loader"
+          "style-loader","css-loader","sass-loader"
+          //MiniCssExtractPlugin.loader,"css-loader","sass-loader"
         ]
       },
       {
@@ -50,15 +48,17 @@ module.exports = {
     ]
   },
   plugins:[
-    new TerserPlugin(),
-    new MiniCssExtractPlugin({
-      filename:"styles.[contenthash].css",//分离出来css的文件名
-    }),
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ['**/*',path.join(process.cwd(),"build/**/*")],//删除dist所有文件，另外测试配置了build文件下所有内容
     }),
     new HtmlWebpackPlugin({
       title:'webpack5'
     })
-  ]
+  ],
+  devServer: {
+    contentBase: path.join(__dirname, './dist'),
+    compress: true,
+    port: 9000,
+    hot:true
+  },
 }

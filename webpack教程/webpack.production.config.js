@@ -11,7 +11,7 @@ module.exports = {
     path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
     publicPath:"auto",//图片路径, 或者 "/dist/"
   },
-  mode:"development",//none
+  mode:"production",//none
   module:{
     //规则
     rules:[
