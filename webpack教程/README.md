@@ -28,8 +28,8 @@ webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的
 * 配置高版本js语法(当遇到浏览器无法识别的高版本语法，转换为可以识别的es5版本语法)
   * 安装 cnpm install babel-loader @babel/core @babel/preset-env @babel/plugin-proposal-class-properties --save-dev
 
-> 这里配置详情看webpack.config.js
-
 ### 在 webpack.config.js 中配置 plugins
 * cnpm install terser-webpack-plugin --save-dev 该插件可以打包优化，减小包的大小（new TerserPlugin()）
-* cnpm i mini-css-extract-plugin --save=dve 分离css(原本写在index.html 的head中，把它分离成另外的css文件)
+* cnpm i mini-css-extract-plugin --save-dev 分离css(原本写在index.html 的head中，把它分离成另外的css文件)
+
+> 这里配置详情看webpack.config.js

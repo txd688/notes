@@ -47,9 +47,9 @@ module.exports = {
     ]
   },
   plugins:[
-    new TerserPlugin(),
+    new TerserPlugin(),//打包优化
     new MiniCssExtractPlugin({
-      filename:"styles.css",//分离出来css的文件名
+      filename:"styles.css",//分离出来css的文件名，也会优化资源
     })
   ]
 }
