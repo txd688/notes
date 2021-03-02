@@ -30,9 +30,12 @@ webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的
 
 ### 在 webpack.config.js 中配置 plugins
 * cnpm install terser-webpack-plugin --save-dev 该插件可以打包优化，减小包的大小（new TerserPlugin()）
-* cnpm i mini-css-extract-plugin --save-dve 分离css(原本写在index.html 的head中，把它分离成另外的css文件)
+* cnpm i mini-css-extract-plugin --save-dve 分离css(原本写在index.html 的head中，把它分离成另外的css文件,还需要在规则中设置)
 * cnpm install --save-dev clean-webpack-plugin 在打包之前清除打包目录下的所有文件
 * cnpm i --save-dev html-webpack-plugin 打包自动生成html文件
+* new webpack.BannerPlugin()  内置，首行注释，为的就是在发生问题时可以找到当时写代码的人。有时候也用于版权声明。
+
+> 这里配置详情看webpack.config.js
 
 ### 配置开发环境和生产环境
 * 分别创建了webpack.dev.config.js 和 webpack.production.config.js 文件管理这两个不同环境
@@ -42,7 +45,16 @@ webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的
 
 ### 开发服务器(devServer)
 * npm install webpack-dev-server --save-dev
-在 package.json 的dev中添加 serve ，在dev.config.js 添加对应端口（devServer）
+在 package.json 的dev中添加 serve ，在webpack.dev.config.js 添加对应端口（devServer）
 * cnpm i mini-css-extract-plugin --save-dev 分离css(原本写在index.html 的head中，把它分离成另外的css文件)
 
-> 这里配置详情看webpack.config.js
+### 设置多个入口文件，多个css和js
+* 配置 entry 为对象
+* output.filename 和 MiniCssExtractPlugin 设置为动态name
+见 webpack.production.config.js
+
+### 设置多个html文件
+
+
+
+

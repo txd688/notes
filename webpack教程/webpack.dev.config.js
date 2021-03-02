@@ -1,5 +1,4 @@
 const path = require("path");  // 该模块系统提供，不需要安装
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -48,9 +47,6 @@ module.exports = {
     ]
   },
   plugins:[
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['**/*',path.join(process.cwd(),"build/**/*")],//删除dist所有文件，另外测试配置了build文件下所有内容
-    }),
     new HtmlWebpackPlugin({
       title:'webpack5'
     })

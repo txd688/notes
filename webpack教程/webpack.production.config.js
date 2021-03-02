@@ -3,11 +3,15 @@ const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
-  entry:"./src/index.js", // 需要打包文件(跟它有关的东西都会打包)
+  entry:{
+    "ms-button":"./src/ms-button.js",
+    "ms-image":"./src/ms-image.js"//如果传入一个字符串或字符串数组，chunk 会被命名为 main。如果传入一个对象，则每个属性的键(key)会是 chunk 的名称，该属性的值描述了 chunk 的入口点。
+  },
   output:{
-    filename:"bundle.[contenthash].js", // 打包后的名字
+    filename:"[name].[contenthash].js", // 使用入口名称, chunk的名称
     path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
     publicPath:"auto",//图片路径, 或者 "/dist/"
   },
@@ -21,7 +25,6 @@ module.exports = {
           "file-loader"
         ]
       },// 配置了图片
-      { test: /\.txt$/, use: 'raw-loader' }, // 允许了txt文件
       {
         test:/\.css$/,
         use:[
@@ -52,13 +55,17 @@ module.exports = {
   plugins:[
     new TerserPlugin(),
     new MiniCssExtractPlugin({
-      filename:"styles.[contenthash].css",//分离出来css的文件名
+      filename:"[name].[contenthash].css",//分离出来css的文件名
     }),
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ['**/*',path.join(process.cwd(),"build/**/*")],//删除dist所有文件，另外测试配置了build文件下所有内容
     }),
     new HtmlWebpackPlugin({
-      title:'webpack5'
+      title:'webpack5',
+      filename : 'index.html' //指定内存中生成的页面的名称
     })
-  ]
+  ],
+  performance:{
+    hints:false
+  },//图片内存过大，导致警告，消除警告
 }
