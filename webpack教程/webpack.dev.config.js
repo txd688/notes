@@ -18,14 +18,6 @@ module.exports = {
           "file-loader"
         ]
       },// 配置了图片
-      { test: /\.txt$/, use: 'raw-loader' }, // 允许了txt文件
-      {
-        test:/\.css$/,
-        use:[
-          "style-loader","css-loader"
-          //MiniCssExtractPlugin.loader,"css-loader"
-        ]
-      },
       {
         test:/\.scss$/,
         use:[

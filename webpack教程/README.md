@@ -187,4 +187,5 @@ output.publicPath = '/static/'
 ### 拆分两个独立的app
 将原本的两个html抽离成两个独立文件夹，ms-button 和 ms-image。
 
-### 
+### 动态加载代码和共享依赖
+* 

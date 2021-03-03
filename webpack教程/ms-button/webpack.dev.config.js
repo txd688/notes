@@ -1,27 +1,23 @@
 const path = require("path");  // 该模块系统提供，不需要安装
-const TerserPlugin = require("terser-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack = require('webpack');
 const { ModuleFederationPlugin } = require("webpack").container;
 
 module.exports = {
-  entry:"./src/index.js",
+  entry:"./src/index.js", // 需要打包文件(跟它有关的东西都会打包)
   output:{
-    filename:"[name].[contenthash].js", // 使用入口名称, chunk的名称
+    filename:"bundle.js", // 打包后的名字
     path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
-    publicPath:"http://location:1001/",//图片路径, 或者 "/dist/"
+    publicPath:"http://localhost:1001/",//图片路径, 或者 "/dist/"
   },
-  mode:"production",//none
+  mode:"development",//none
   module:{
     //规则
     rules:[
       {
         test:/\.scss$/,
         use:[
-          // "style-loader","css-loader","sass-loader"
-          MiniCssExtractPlugin.loader,"css-loader","sass-loader"
+          "style-loader","css-loader","sass-loader"
+          //MiniCssExtractPlugin.loader,"css-loader","sass-loader"
         ]
       },
       {
@@ -38,21 +34,12 @@ module.exports = {
     ]
   },
   plugins:[
-    new TerserPlugin(),
-    new MiniCssExtractPlugin({
-      filename:"[name].[contenthash].css",//分离出来css的文件名
-    }),
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['**/*',path.join(process.cwd(),"build/**/*")],//删除dist所有文件，另外测试配置了build文件下所有内容
-    }),
     new HtmlWebpackPlugin({
       title:'ms-button',//title
-      filename : 'ms-button.html',//生成文件名
       minify:false,//是否压缩
       meta:{
         description:'ms-button',//注入meta标签。描述
       },
-      template:'index.html',//模板
     }),
     new ModuleFederationPlugin({
       name:'MsButtonApp',//名称
@@ -62,13 +49,11 @@ module.exports = {
       }
     })
   ],
-  performance:{
-    hints:false
-  },//图片内存过大，导致警告，消除警告
-  optimization:{
-    splitChunks:{
-      chunks: 'all',
-      minSize:3000
-    }
-  }
+  devServer: {
+    contentBase: path.join(__dirname, './dist'),
+    compress: true,
+    port: 1001,
+    hot:true,
+    open:true
+  },
 }
