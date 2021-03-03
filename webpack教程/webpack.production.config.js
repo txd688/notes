@@ -13,7 +13,7 @@ module.exports = {
   output:{
     filename:"[name].[contenthash].js", // 使用入口名称, chunk的名称
     path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
-    publicPath:"auto",//图片路径, 或者 "/dist/"
+    publicPath:"/static/",//图片路径, 或者 "/dist/"
   },
   mode:"production",//none
   module:{
@@ -61,11 +61,32 @@ module.exports = {
       cleanOnceBeforeBuildPatterns: ['**/*',path.join(process.cwd(),"build/**/*")],//删除dist所有文件，另外测试配置了build文件下所有内容
     }),
     new HtmlWebpackPlugin({
-      title:'webpack5',
-      filename : 'index.html' //指定内存中生成的页面的名称
+      title:'ms-button',//title
+      filename : 'ms-button.html',//生成文件名
+      chunks:['ms-button'],//传入chunk
+      minify:false,//是否压缩
+      meta:{
+        description:'ms-button',//注入meta标签。描述
+      },
+      template:'index.html',//模板
+    }),
+    new HtmlWebpackPlugin({
+      title:'ms-image',
+      filename : 'ms-image.html',
+      chunks:['ms-image'],
+      meta:{
+        description:'ms-image'
+      },
+      template:'index.html'
     })
   ],
   performance:{
     hints:false
   },//图片内存过大，导致警告，消除警告
+  optimization:{
+    splitChunks:{
+      chunks: 'all',
+      minSize:3000
+    }
+  }
 }
