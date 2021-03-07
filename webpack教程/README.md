@@ -15,14 +15,16 @@ npm init
 webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的自带能力本文件实例：
 * 配置了图片(png,jpg)。
   * 安装了 cnpm i file-loader --save（这放到了生产环境dependencies）
-* 模块化了txt文件
+
 * 模块化css
   * style-loader 将css样式写入到我们的应用中
   * css-loader 读取css，识别css   (cnpm install style-loader --save-dev 这是放到开发环境下devDependencies)
+
 * 模块化scss(是一种css预处理器和一种语言)
   * style-loader 将css样式写入到我们的应用中
   * css-loader 读取css，识别css   (cnpm install style-loader --save-dev 这是放到开发环境下devDependencies)
   * cnpm install node-sass  sass-loader --save-dev
+  
 * 配置高版本js语法(当遇到浏览器无法识别的高版本语法，转换为可以识别的es5版本语法)
   * 安装 cnpm install babel-loader @babel/core @babel/preset-env @babel/plugin-proposal-class-properties --save-dev
 ```
@@ -42,6 +44,18 @@ module:{
   ]
 }
 ```
+
+* 配置html文件
+  * cnpm i --save-dev html-loader extract-loader file-loader 
+```
+{
+  test:/\.html$/,
+  use:[
+    'file-loader',"extract-loader","html-loader"
+  ]
+}
+```
+
 ### 在 webpack.config.js 中配置 plugins
 * cnpm install terser-webpack-plugin --save-dev 该插件可以打包优化，减小包的大小（new TerserPlugin()）
 ```
@@ -51,6 +65,7 @@ plugins:[
   new TerserPlugin(),
 ]
 ```
+
 * cnpm i mini-css-extract-plugin --save-dve 分离css(原本写在index.html 的head中，把它分离成另外的css文件,还需要在规则中设置)
 ```
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -66,6 +81,7 @@ new MiniCssExtractPlugin({
   filename:"[name].[contenthash].css",//分离出来css的文件名
 }),
 ```
+
 * cnpm install --save-dev clean-webpack-plugin 在打包之前清除打包目录下的所有文件
 ```
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -74,6 +90,7 @@ new CleanWebpackPlugin({
   cleanOnceBeforeBuildPatterns: ['**/*',path.join(process.cwd(),"build/**/*")],//删除dist所有文件，另外测试配置了build文件下所有内容
 }),
 ```
+
 * cnpm i --save-dev html-webpack-plugin 打包自动生成html文件
 ```
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -89,6 +106,7 @@ new HtmlWebpackPlugin({
   template:'index.html',             //模板
 }),
 ```
+
 * new webpack.BannerPlugin()  内置，首行注释，为的就是在发生问题时可以找到当时写代码的人。有时候也用于版权声明。
 
 > 这里配置详情看webpack.config.js
@@ -188,4 +206,34 @@ output.publicPath = '/static/'
 将原本的两个html抽离成两个独立文件夹，ms-button 和 ms-image。
 
 ### 动态加载代码和共享依赖
-* 
+```
+const { ModuleFederationPlugin } = require("webpack").container;
+
+publicPath:"http://localhost:1001/",//图片路径, 或者 "/dist/"
+//暴露方法
+new ModuleFederationPlugin({
+  name:'MsButtonApp',//名称
+  filename:'remoteEntry.js',//重命名
+  exposes:{
+    "./MsButton":'./src/components/ms-button/ms-button.js',//对外部进行暴露，名称和地址
+  }
+});
+
+app.use('/', express.static(path.resolve(__dirname,"../dist")));
+
+
+const { ModuleFederationPlugin  } = require("webpack").container;
+// 导入方法
+new ModuleFederationPlugin({
+  name:'MsImageApp',
+  remotes:{
+    MsButton:"MsButtonApp@http://localhost:1001/remoteEntry.js"
+  }
+});
+// 使用
+import("MsButton/MsButton").then(res=>{
+  const msButton = res.default;
+  const msButton2 = new msButton();
+  msButton2.render();
+});
+```

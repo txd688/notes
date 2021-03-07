@@ -36,6 +36,12 @@ module.exports = {
           }
         }
       },//当找到高版本语法，就会借助babel-loader进行转换，会使用这个插件转为es5
+      {
+        test:/\.html$/,
+        use:[
+          'file-loader',"extract-loader","html-loader"
+        ]
+      }
     ]
   },
   plugins:[
@@ -46,6 +52,7 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, './dist'),
     compress: true,
+    overlay:true,//是错误信息展示在页面
     port: 9000,
     hot:true
   },
