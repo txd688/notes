@@ -21,7 +21,7 @@ webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的
   * css-loader 读取css，识别css   (cnpm install style-loader --save-dev 这是放到开发环境下devDependencies)
 * 模块化scss(是一种css预处理器和一种语言)
   * style-loader 将css样式写入到我们的应用中
-  * css-loader 读取css，识别css   (cnpm install style-loader --save-dev 这是放到开发环境下devDependencies)
+  * sass-loader 读取sass，识别sass   (cnpm install style-loader --save-dev 这是放到开发环境下devDependencies)
   * cnpm install node-sass  sass-loader --save-dev
 * 配置高版本js语法(当遇到浏览器无法识别的高版本语法，转换为可以识别的es5版本语法)
   * 安装 cnpm install babel-loader @babel/core @babel/preset-env @babel/plugin-proposal-class-properties --save-dev
@@ -188,4 +188,54 @@ output.publicPath = '/static/'
 将原本的两个html抽离成两个独立文件夹，ms-button 和 ms-image。
 
 ### 动态加载代码和共享依赖
-* 
+
+B項目使用A項目模快内容
+```
+// A項目
+//webpack.production.config.js
+const { ModuleFederationPlugin } = require("webpack").container;
+new ModuleFederationPlugin({
+  name:'MsButtonApp',//名称
+  filename:'remoteEntry.js',//重命名
+  exposes:{
+    "./MsButton":'./src/components/ms-button/ms-button.js',//对外部进行暴露，名称和地址
+  }
+})
+
+output:{
+  filename:"[name].[contenthash].js", // 使用入口名称, chunk的名称
+  path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
+  publicPath:"http://location:1001/",//图片路径, 或者 "/dist/"
+}
+//server.js
+app.use('/', express.static(path.resolve(__dirname,"../dist")));
+//服务对象监听服务器地址及端口
+app.listen(1001,function(){
+  console.log('服务启动了!!!!');
+});
+
+//B項目
+// webpack.production.config.js
+const { ModuleFederationPlugin } = require("webpack").container;
+new ModuleFederationPlugin({
+  name:'MsImageApp',
+  remotes:{
+    MsButton:"MsButtonApp@http://localhost:1001/remoteEntry.js"
+  }
+})
+
+output:{
+  filename:"[name].[contenthash].js", // 使用入口名称, chunk的名称
+  path:path.resolve(__dirname,"./dist"),// 放到哪个文件下（相对路径，dirname是当前文件夹路径）
+  publicPath:"/static/",//图片路径, 或者 "/dist/"
+}
+
+// server.js 
+app.use('/static', express.static(path.resolve(__dirname,"../dist")));
+
+//服务对象监听服务器地址及端口
+app.listen(1002,function(){
+  console.log('服务启动了!!!!');
+});
+
+```
