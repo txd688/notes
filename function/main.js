@@ -83,3 +83,20 @@ export function isphone(num){
   } 
   return false;
 }
+
+
+/**
+ * @des: 实现数字每三位数逗号分隔
+*/
+export function thousandBitSeparator(textValue) {
+  if (textValue === '') return '';
+
+  var textValueFormat = Number(textValue);
+
+  if (!isNaN(textValueFormat)) {
+
+    return textValueFormat.toLocaleString('en-US');
+  } else {
+    return textValue;
+  }
+}
