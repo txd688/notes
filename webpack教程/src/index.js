@@ -3,6 +3,7 @@ import MsButton from "./components/ms-button/ms-button";
 import HeadTitle from "./components/ms-heading/heading";
 
 addImage();
+alert(1)
 
 const msButton = new MsButton;
 msButton.render();
