@@ -206,27 +206,23 @@ output.publicPath = '/static/'
 将原本的两个html抽离成两个独立文件夹，ms-button 和 ms-image。
 
 ### 动态加载代码和共享依赖
-<<<<<<< HEAD
 
 B項目使用A項目模快内容
 ```
 // A項目
 //webpack.production.config.js
 const { ModuleFederationPlugin } = require("webpack").container;
-=======
 ```
 const { ModuleFederationPlugin } = require("webpack").container;
 
 publicPath:"http://localhost:1001/",//图片路径, 或者 "/dist/"
 //暴露方法
->>>>>>> 2a6abfc9d8750afc7437c0176c5ce95d2f97ad77
 new ModuleFederationPlugin({
   name:'MsButtonApp',//名称
   filename:'remoteEntry.js',//重命名
   exposes:{
     "./MsButton":'./src/components/ms-button/ms-button.js',//对外部进行暴露，名称和地址
   }
-<<<<<<< HEAD
 })
 
 output:{
@@ -244,7 +240,6 @@ app.listen(1001,function(){
 //B項目
 // webpack.production.config.js
 const { ModuleFederationPlugin } = require("webpack").container;
-=======
 });
 
 app.use('/', express.static(path.resolve(__dirname,"../dist")));
@@ -252,13 +247,11 @@ app.use('/', express.static(path.resolve(__dirname,"../dist")));
 
 const { ModuleFederationPlugin  } = require("webpack").container;
 // 导入方法
->>>>>>> 2a6abfc9d8750afc7437c0176c5ce95d2f97ad77
 new ModuleFederationPlugin({
   name:'MsImageApp',
   remotes:{
     MsButton:"MsButtonApp@http://localhost:1001/remoteEntry.js"
   }
-<<<<<<< HEAD
 })
 
 output:{
@@ -275,7 +268,6 @@ app.listen(1002,function(){
   console.log('服务启动了!!!!');
 });
 
-=======
 });
 // 使用
 import("MsButton/MsButton").then(res=>{
@@ -283,5 +275,4 @@ import("MsButton/MsButton").then(res=>{
   const msButton2 = new msButton();
   msButton2.render();
 });
->>>>>>> 2a6abfc9d8750afc7437c0176c5ce95d2f97ad77
 ```

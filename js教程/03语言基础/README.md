@@ -138,7 +138,7 @@ name = 'matt';
 
 ### typeof 操作符
 对一个值使用typeof 操作符会返回下列字符串之一：
-* "undefined" 表示值为定义
+* "undefined" 表示值为未定义
 * "boolean" 表示值为布尔值
 * "string" 表示值为字符串
 * "number" 表示值为数值
@@ -161,7 +161,8 @@ console.log(typeof demo); //"underfined"
 ### Null类型
 Null类型同样只有一个值，即特殊值null。表示一个空对象指针。
 `console.log(null == undefined);  //true  `
-
+`typeof null;   // Object`
+`null === null; //true`
 ### Boolean 类型
 有两个字面值：true 和 false。
 
@@ -408,8 +409,8 @@ let obj = {
 console.log(obj);     //{Symbol(foo): foo val}
 Object.defineProperty(obj, s2, {value: 'bar val'});
 Object.defineProperties(obj, {
-   [s3]: {value: 'baz value'},
-   [s4]: {value: 'qux value}
+   [s3]: { value: 'baz value'},
+   [s4]: { value: 'qux value'}
  });
  //上述4种方法都可以使用。
  ```

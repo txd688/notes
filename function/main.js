@@ -90,11 +90,8 @@ export function isphone(num){
 */
 export function thousandBitSeparator(textValue) {
   if (textValue === '') return '';
-
   var textValueFormat = Number(textValue);
-
   if (!isNaN(textValueFormat)) {
-
     return textValueFormat.toLocaleString('en-US');
   } else {
     return textValue;
