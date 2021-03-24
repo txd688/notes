@@ -1,15 +1,22 @@
 ## 语言基础  
 
-### 区分大小写
+### 语法
+
+#### 区分大小写
+
 无论变量、函数名还是操作符，都区分大小写。
 
-### 标识符
+#### 标识符
+
 变量、函数、属性或函数参数的名称。可以由一或多个下列字符组成：
+
 * 第一个字符必须是一个字母、下划线(\_)或者美元符号($)；
 * 剩下的其他字符可以是字母、下划线、美元符号或者数字。
+
 >注:一般使用驼峰大小写形式(例:doSomethingImportant)
 
-### 注释
+#### 注释
+
 ```
 //单行注释
 
@@ -21,10 +28,12 @@
 */
 ```
 
-### 严格模式
+#### 严格模式
+
 ECMAScript3的一些不规范写法在这种模式下会被处理，对于不安全的活动将抛出错误。要对整个脚本启用严格模式，在脚本开头加上这一行:
-`  "use strict"  `
-预处理指令。也可以单独指定一个函数在严格模式下执行，只要把这个预处理指令放到函数体开头即可：
+`"use strict"`
+预处理指令。也可以单独指定一个函数在严格模式下执行：
+
 ```
 function doSomething(){
   "user strict"
@@ -33,32 +42,46 @@ function doSomething(){
 ```
 
 ### 关键字与保留字
+
 #### 一些特殊用途的关键字  
-break         do         in        typeof        case        else        instanceof        var   
-catch         export     new       void          class       extends     return            while  
-const         finally    super     with          continue    for         switch            yield
-debugger      function   this      default       if          throw       delete           import     try
+
+|  表头   | 表头  |  表头   | 表头  |  表头  |
+|  ----  | ----  | -----|----|----|---|
+| break  |   do   |    in   |  typeof   |  case |
+|  else  | instanceof  |    var | catch     |  try |
+| export |    new  |   void  |     class    | extends |
+| return |   while  | const   |  finally   | super   |
+| with   | continue |   for  |   switch  |  yield   |
+| debugger | function |  this  | default  | if    |
+|  throw  |  delete  | import |
 
 #### 未来保留字
 
 始终保留：  
 enum  
 
-严格模式下保留:  
-implements    package   public   interface   protected   static   let    private
+严格模式下保留:
+
+|  表头   | 表头  |  表头   | 表头  |  表头  |
+|  ----  | ----  | -----|----|----|---|
+| implements  |  package  |  public |  interface | private |
+|  protected  | static |  let   |
 
 模块代码中保留：  
 await  
 这些词汇不能用作标识符，但现在还可以作对象的属性名。一般来说，再好还是不要使用。
 
 ### 变量
+
 可以用于保存任何类型的数据。每个变量只不过是个用于保存任意值得命名占位符。var 、 const 和 let 。  
 
-### var
+#### var
+
 声明提升
+
 ```
 function test(){
-  message = 'hi';//全局变量
+  message = 'hi';  //全局变量
 }
 console.log(message);  //"hi"
 
@@ -76,8 +99,10 @@ function foo(){
 // 提升（hoist），把所有变量声明都拉到函数作用域的顶部。此外反复多次使用var声明同一个变量也没有问题。
 ```
 
-### let
-区别：let声明的范围是块作用域，而var声明的范围是函数作用域。
+#### let
+
+区别：let声明的范围是块作用域（不会变量提升），而var声明的范围是函数作用域。
+
 ```
 if(true){
   var name = "Matt";
@@ -91,10 +116,13 @@ if(true){
 }
 console.log(age);     //ReferenceError:age 没有定义
 ```
+
 在这里，age变量之所以不能再if块外部被引用，是因为它的作用域仅限于该块内部。  
 另外let也不允许同一个块作用域多次声明，导致报错。
+
 1. 暂时性死区
 let 与 var 另一个区别： let 声明的变量不会再作用域中被提升
+
 ```
 console.log(name);    //undefined
 var name = "matt";
@@ -102,8 +130,10 @@ var name = "matt";
 cosole.log(age);     //ReferenceError: age 没有定义
 let age = 26
 ```
+
 2. 全局声明
 使用let在全局作用域中声明的变量不会成为window 对象的属性(var 声明的变量则会)。
+
 ```
 var name = "matt";
 console.log(window.name);     //"matt"
@@ -113,21 +143,46 @@ console.log(window.age);     //undefined
 ```
 
 3. 条件声明
+
 ```
 if(typeof name === 'undefined'){  
   let name;
 }
 name = 'matt';
 ```
-### const
+
+因为let是块作用域，所有不能使用。
+
+4. for 循环中的let声明
+解决了var迭代变量的溢出。
+
+```
+//在执行超时逻辑时，这里i始终为10
+for(var i = 0; i< 10; i++){
+    setTimeout(() => console.log(i), 0);
+}
+
+// 这里let每次声明一个独立变量，所有会是1,2,3，4。。。。
+for(let i = 0; i< 10; i++){
+    setTimeout(() => console.log(i), 0);
+}
+```
+
+#### const
+
 行为为与let基本相同，区别是用它声明的变量时必须同时初始化变量，且尝试修改const声明的变量会导致运行时错误。
+
  ```
  const age = 36;
  age = 23;    //TypeError:给常量赋值
 ```
 
+不能用于迭代变量(for),因为迭代变量会自增。（可以使用 for-of 和 for-in）
+
 ## 数据类型
+
 6种简单数据类型：
+
 * Underfined
 * Null
 * Boolean
@@ -136,8 +191,10 @@ name = 'matt';
 * Symbol
 复杂数据类型 Object
 
-### typeof 操作符
+#### typeof 操作符
+
 对一个值使用typeof 操作符会返回下列字符串之一：
+
 * "undefined" 表示值为未定义
 * "boolean" 表示值为布尔值
 * "string" 表示值为字符串
@@ -146,33 +203,47 @@ name = 'matt';
 * "function" 表示值为函数
 * "symbol" 表示值为符号
 
-### Undefined 类型
+#### Undefined 类型
+
 Undefined类型只有一个值，就是特殊值undefined。当使用var 或 let 声明了变量但没有初始化时，就相当于给变量赋予了undefined值。
+
 ```
 let message;
 console.log(message == undefined); // true
 
 let age;
 console.log(typeof age);  //"undefined"
-console.log(typeof demo); //"underfined"
+console.log(typeof demo); //"underfined" 这里没有报错
 ```
+
 上面有个小点，在对未初始化的变量调用typeof时，返回的结果是"undefined",但对未声明的变量调用也是"undefiled"。
 
 ### Null类型
+
 Null类型同样只有一个值，即特殊值null。表示一个空对象指针。
-`console.log(null == undefined);  //true  `
+`console.log(null == undefined);  //true`
 `typeof null;   // Object`
 `null === null; //true`
+
 ### Boolean 类型
+
 有两个字面值：true 和 false。
+| 数据类型 | 转化为true | 转化为false|
+|------|-------|------|
+| String | 非空字符串 |  "" |
+| Number | 非零数值(包括无穷值) | 0、NaN |
+| Object | 任意对象 | null |
+| Undefined | N/A（不存在） | undefined |
 
 ### Number 类型
+
 Number 类型使用了IEEE 754 格式表示整数和浮点数(双精度值)。
 八进制：第一个数字必须是零(0)，es6后改为: 0o。例：070 // 56。
-十六进制：以 0x 开头（区分大小写）后面是（0-9 以及 A-F）。例： 0xA  //10         0x1f   //31   
+十六进制：以 0x 开头（区分大小写）后面是（0-9 以及 A-F）。例： 0xA  //10         0x1f   //31
 
 1.浮点数
 数值中必须包含小数点，而且小数点后面必须至少一个数字。存在精度问题。0.1 + 0.2 //0.30000000000000004
+
 ```
 let a = 1.1;
 let b = .1; //有效，但不推荐
@@ -191,6 +262,7 @@ isFinite(num) 这个函数可以检测是否超出有限数值范围。
 涉及NaN的操作始终返回NaN。NaN 不等于包括NaN在内的任何值。NaN == NaN //false
 `isNaN()`
 该函数接收一个参数，可以是任意数据类型，然后判断这个参数是否“不是数值”。吧一个值传给isNaN()后，改函数会尝试把它转化为数值。某些非数值的值可以直接转化为数值，如字符串"10"或布尔值。任何不能转化为数值的值都会导致这个函数返回true。例：
+
 ```
 console.log(isNaN(NaN));   //true
 console.log(isNaN(NaN));   //false , 10是一个数值
@@ -202,20 +274,22 @@ console.log(isNaN(true));     //false
 4. 数值转换
 **Number()**  
 是转型函数，可用于任何数据类型。
- * 布尔值，true 转为 1，false 转为 0。
- * 数值，直接返回
- * null，返回 0.
- * undefined，返回NaN
- * 字符串，应用一下规则：
-    * 如果字符串包含数值字符，转换为一个十进制数值。因此，Number("1")返回1 。
-    * 如果字符串包含有效浮点数，则会转换为相应浮点数。
-    * 如果包含有效的十六进制格式如"0xf",转换为对应的十进制整数值。
-    * 如果是空字符串返回 0 。
-    * 如果字符串包含除上述情况之外的其他字符，返回NaN。
-* 对象，调用 valueOf() 方法，并按照上述规则转换返回的值。如果转换结果是 NaN，则调用 toString() 方法，再按照转换字符串的规则转换。 
+
+* 布尔值，true 转为 1，false 转为 0。
+* 数值，直接返回
+* null，返回 0.
+* undefined，返回NaN
+* 字符串，应用一下规则：
+  * 如果字符串包含数值字符，转换为一个十进制数值。因此，Number("1")返回1 。
+  * 如果字符串包含有效浮点数，则会转换为相应浮点数。
+  * 如果包含有效的十六进制格式如"0xf",转换为对应的十进制整数值。
+  * 如果是空字符串返回 0 。
+  * 如果字符串包含除上述情况之外的其他字符，返回NaN。
+* 对象，调用 valueOf() 方法，并按照上述规则转换返回的值。如果转换结果是 NaN，则调用 toString() 方法，再按照转换字符串的规则转换。
 
 **parseInt()**
 从第一个字符开始检测，直到末尾或者中途配到非数值字符停止。第二个参数用于指定底数(进制数)。
+
 ```
 let num1 = parseInt("12a23b");           // 12
 let num2 = parseInt("");                 // NaN
@@ -228,6 +302,7 @@ let num5 = parseInt("AF");
 
 **parseFloat()**
 与parseInt()类似，区别始终忽略字符串开头的零。
+
 ```
 let num1 = parseFloat("123blue");      // 1234
 let num2 = parseFloat("0xA");          // 0
@@ -236,6 +311,7 @@ let num4 = parseFloat("3.12e6");       // 3120000  与parseInt()不同可以识�
 ```
 
 ### String 类型
+
 表示零或多个16位Unicode字符序列。可以使用双引号(")、单引号(')、反引号(`)；  
 
 1. 字符字面量
@@ -257,6 +333,7 @@ let num4 = parseFloat("3.12e6");       // 3120000  与parseInt()不同可以识�
 3. 转换字符串
 有两种方法： dateObject.toString() 和 String()；
 **toString()** 方法可用于数值、布尔值、对象和字符串值。null 和 undefined 没有这个方法。可以接收一个底数参数。
+
 ```
 let age = 11;
 let ageString = age.toString();      // "11"
@@ -269,13 +346,16 @@ console.log(num.toString(8));        // "12"
 console.log(num.toString(10));       // "10"
 console.log(num.toString(16));       // "a"
 ```
+
 **String()** 始终返回表示相应类型的字符串。遵循以下规则：
- * 如果值有toString()方法，则调用该方法（不传参数）并返回结果
- * 如果值为 null，返回"null" 。
- * 如果值为 undefined，返回 "undefined" 。、
- 
+
+* 如果值有toString()方法，则调用该方法（不传参数）并返回结果
+* 如果值为 null，返回"null" 。
+* 如果值为 undefined，返回 "undefined" 。、
+
  4. 模板字面量
  ECMScript6 新增。可以保留换行字符，可以跨行定义字符串。
+
  ```
  let pageHTML = `
  <div>
@@ -284,11 +364,13 @@ console.log(num.toString(16));       // "a"
   </a>
 </div>`;
 ```
+
 5. 字符串插值
 在模板字符串中使用 ${} ,所有插入的值都会使用toString()强制转型为字符串。也可以调用函数和方法。
 
 6. 模板字面量标签函数
 标签函数接收一个被插值分割后的的模板和对每一个插值表达式的结果。
+
 ```
 let a = 6;
 let b= 9;
@@ -336,6 +418,7 @@ console.log(message)
 
 7. 原始字符串
 使用模板字面量可以直接获取原始的模板字面内容，而不是转义后的字符。使用默认 String.raw 标签函数：
+
 ```
 console.log(`\u00A9`);       // ©
 console.log(String.raw`\u00A9`);     // \u00A9      
@@ -364,8 +447,11 @@ printRaw`\u00A9 ${ 'and' } \n`;
 ```
 
 ### Symbol 类型
+
 符号是原始值，且是唯一、不可变得。用途：确保对象属性使用唯一标识符，不会发生属性冲突的危险。
+
 1. 符号的基本使用
+
 ```
 let sym = Symbol();   
 console.log(typeof sym);       // symbol
@@ -375,16 +461,20 @@ let fooSymbol = Symbol('foo');
 let otherSymbol = Symbol('foo');
 console.log(fooSymbol == otherSymbol);       //false
 ```
+
 没有字面量语法，只要创建一个Symbol()实例将其用作对象的新属性，不会覆盖已有的对象属性。不能用作构造函数。  
 
 2. 使用**全局符号**注册表
 Symbol.for()方法可以重用和共享符号实例。该方法执行幂等操作，会检测全局运行的注册表，如果不存在创建，存在返回。(传入字符串，任何值都会被转为字符串)
+
 ```
 let fooGlobalSymbol = Symbol.for('foo');       //创建新的符号
 let otherGlobalSymbol = Symbol.for('foo')；    // 重用已有符号
 console.log(fooGlobalSymbol == otherGlobalSymbol);        //true
 ```
+
 Symbol.keyFor()来查询是否有全局符号。(对应上面的方法)该方法接收一个符号，如果不是报错。
+
 ```
 //创建全局符号
 let a = Symbol.for('foo');
@@ -397,6 +487,7 @@ console.log(Symbol.keyFor(b));   // undefined
 
 3. 使用符号作属性
 凡是可以使用字符串或数值作为属性的地方，都可以使用符号。
+
 ```
 let s1 = Symbol('foo'),
     s2 = Symbol('bar'),
@@ -414,7 +505,14 @@ Object.defineProperties(obj, {
  });
  //上述4种方法都可以使用。
  ```
- 另外 Object.getOwnPropertyNames()返回常规属性数组，Object.getOwnPropertySymbols()返回符号属性数组。Reflect.ownKeys()返回这两种。
+
+ 另外
+
+* Object.getOwnPropertyNames()返回常规属性数组
+* Object.getOwnPropertySymbols()返回符号属性数组。
+* Object.getOwnPropertyDescriptors() 返回常规属性和符号属性数组。
+* Reflect.ownKeys()返回这两种键。
+
  ```
  let s1 = Symbol('foo');
  let s2 = Symbol('bar');
@@ -428,7 +526,9 @@ Object.defineProperties(obj, {
   console.log(Object.getOwnPropertySymbols(obj));        // [Symbol(foo), Symbol(bar)]
   console.log(Reflect.ownKeys(obj));                     // ["baz", "qux", Symbol(foo), Symbol(bar)]
  ```
+
  如果没有显式地保存这些属性的应用，必须遍历对象的所有符号属性才能找到相应的属性键：
+
  ```
 let obj = {
   [Symbol('foo')]: 'foo val',
@@ -439,22 +539,24 @@ let obj = {
 let barSymbol = Object.getOwnPropertySymbols(obj).find((sym) => sym.toString().match(/bar/))
 console.log(barSymbol);            // Symbol(bar)
  ```
- 
+
 4. 常用内容符号
 用于暴露语言内部行为，可以直接访问、重写或模拟这些行为。
 
 5. Symbol.asyncIterator
 一个方法，该方法返回对象默认的AsyncIterator.由 for-await-of 语句使用。实现异步迭代器API的函数。
 for-await-of 循环会利用这个函数执行异步迭代操作。循环时，它们会调用以Symbol.asyncIterator为键的函数，并期望这个函数会返回一个实现迭代器API的对象。很多时候返回的是AsyncGenerator：
+
 ```
 class Foo{
     async *[Symbol.asyncIterator](){}
 }
 let f = new Foo();
-console.log(f[Symbol.asyncIterator]());
-//AsyncGenerator {<suspended>}
+console.log(f[Symbol.asyncIterator]());       //AsyncGenerator {<suspended>}
 ```
+
 技术上，这个有Symbol.asyncIterator 函数生成的对象应该通过其next()方法陆续返回Promise实例。可以先显式地调用next()方法返回，也可以隐式地通过异步生成函数返回。
+
 ```
 class Emitter{
     constructor(max){
@@ -486,8 +588,10 @@ asyncCount()
 4
 */
 ```
+
 6. Symbol.hasInstance
 一个方法，该方法决定一个构造函数对象是否认可一个对象是它的实例。由 instanceof 操作符使用。instanceof 操作符可以用来确定一个对象实例的原型链上是否有原型。
+
 ```
 function Foo(){}
 let f = new Foo();
@@ -497,7 +601,9 @@ class Bar{}
 let b = new Bar()
 console.log(b instanceof Bar)     //true
 ```
+
 在ES6中，instanceof 操作符会使用 Symbol.hasInstance 函数来确定关系。以 Symbol.hasInstance 为键的函数执行同样的操作，只是操作数对调了一下：
+
 ```
 function Foo() {}
 let f = new Foo()
@@ -507,7 +613,9 @@ class Bar{}
 let b = new Bar()
 console.log(Bar[Symbol.hasInstance](b))       // true
 ```
+
 这个属性定义在 Function 的原型上，因此默认在所有函数和类上都可以调用。由于 instanceof 操作符会在原型链上寻找这个属性定义，就跟在原型链上寻找其他属性一样，因此可以再继承的类上通过静态方法重新定义这个函数：
+
 ```
 class Bar {}
 class Baz extends Bar{
@@ -525,6 +633,7 @@ console.log(b instanceof Baz);                // false
 
 7. Symbol.isConcatSpreadable
 用于配置某对象作为 Array.prototype.concat()方法的参数时是否展开其数组元素，如果为 true ,则应该用 Array.prototype.concat() 打平其**数组元素**，追加到数组末尾。如果为 false 或者假值会导致**整个对象**被追加到数组末尾。(提示：Array.prototype.concat() 这个方法用来合并数组)。
+
 ```
 let initial = ['foo'];
 let array = ['bar'];
@@ -544,6 +653,7 @@ console.log(initial2.concat(arrayLikeObject));              //   ["foo", "baz"]
 
 8. Symbol.iteartor
 一个方法，该方法返回对象默认的迭代器。由 for-of 语句使用。
+
 ```
 class Foo{
     *[Symbol.iterator]() {}
@@ -551,7 +661,9 @@ class Foo{
 let f = new Foo();
 console.log(f[Symbol.iterator]());       // Generator {<suspended>}
 ```
+
 可以通过next()显式地返回，也可以隐式地通过生成器函数返回：
+
 ```
 class Emitter{
     constructor(max){
@@ -585,12 +697,15 @@ count();
 
 9. Symbol.match
 一个正则表达式方法，该方法用正则表达式去匹配字符串。正则表达式的原型上默认有这个函数的定义。因此所有正则表达式实例默认是这个String 方法的有效参数。由String.prototype.match() 使用。
+
 ```
 console.log(RegExp.prototype[Symbol.match]);        // [Symbol.match]() { [native code] }
 
 console.log('foobar'.match(/bar/));             // ["bar", index: 3, input: "foobar", groups: undefined]
 ```
+
 String.prototype.match() 传入非正则表达式会转化为RegExp对象。如果想改变这种行为，让方法直接使用参数，则重新定义 Symbol.match 函数以取代默认对正则表达式求值的行为。返回值没有限制。
+
 ```
 class FooMatcher{
     static [Symbol.match](target){
@@ -618,6 +733,7 @@ console.log('foobar'.match(new StringMatcher('aa')));       // false
 
 10. Symbol.replace
 一个正则表达式方法，该方法替换一个字符串中匹配的子串。由 String.prototype.replace() 使用。与上述类似。
+
 ```
 console.log(RegExp.prototype[Symbol.replace]);      // [Symbol.replace]() { [native code] }
 
@@ -631,6 +747,7 @@ console.log('barfoobaz'.replace(FooReplace,'qux'));      // barquxbaz
 
 11. Symbol.search
 一个正则方法，该方法返回字符串中匹配正则表达式的索引。由 String.prototype.search() 方法使用。
+
 ```
 console.log(RegExp.prototype[Symbol.search]);        // [Symbol.search]() { [native code] }
 console.log('foobar'.search(/bar/));                 //  3
@@ -643,8 +760,10 @@ class FooSearch{
 console.log('foobar'.search(FooSearch));          // 0
 console.log('barfoobar'.search(FooSearch));       // 3
 ```
+
 12. Symbol.split
 一个正则表达式方法，该方法匹配正则表达式的索引位置拆分字符串。由 String.propotype.split() 方法使用。
+
 ```
 console.log(RegExp.prototype[Symbol.split]);          // [Symbol.split]() { [native code] }
 console.log(('foobarbaz').split(/bar/));              //   ["foo", "baz"]
@@ -660,6 +779,7 @@ console.log('barfoobaz'.split(FooSplitter));        // ["bar", "baz"]
 
 13. Symbol.species
 一个函数值，该函数作为创建派生对象的结构函数。用于对内置类型实例方法的返回值暴露实例化派生对象的方法。
+
 ```
 class Bar extends Array {}
 class Baz extends Array {
@@ -685,6 +805,7 @@ console.log(baz instanceof Baz);          // false
 
 14. Symbol.toprimitive
 一个方法，该方法将对象转换为相应的原始值。
+
 ```
 class Foo {}
 let foo = new Foo();
@@ -715,6 +836,7 @@ console.log(String(baz));  //string bar
 
 15. Symbol.toStringTag
 一个字符串，该字符串用于创建对象的默认字符串描述。由 Object.protoype.toString() 使用。通过 toString() 方法获取对象标识时，会检索由 Symbol.toStringTag 指定的实例标识符，默认为 "Object"。内置类型已经指定了这个值，但自定义类型实例还需要明确定义。
+
 ```
 let s = new Set();
 console.log(s);        // Set(0) {}
@@ -740,6 +862,7 @@ console.log(bar[Symbol.toStringTag]);        // Bar
 
 16. Symbol.unscopables
 一个对象，该对象所有的以及继承的属性，都会从关联对象的with环境绑定中排除。让其映射对应属性的键值为true，就可以阻止该属性出现在with环境绑定中。
+
 ```
 let o = {foo :'bar'};
 with (o){
@@ -752,9 +875,12 @@ with (o){
     console.log(foo);       // ReferenceError
 }
 ```
+
 ### Object 类型
+
 一组数据与功能的集合。创建实例，再添加属性与方法。`let obj = new Object();`
 每一 Object 的实例都有如下属性和方法：
+
 * constructor:是一种创建和初始化class创建的对象的特殊方法。
 * hasOwnProperty: 用于判断当前对象实例(不是原型)上是否存在给定的属性。
 * isPrototypeof: 判断当前对象是否为另一个对象的原型。
@@ -766,7 +892,9 @@ with (o){
 ### 操作符
 
 #### 一元操作符
+
 1. 递增/递减操作符
+
 ```
 let age = 29;
 ++age;   // 30
@@ -785,8 +913,10 @@ let num4 = num1 + num2;
 console.log(num3);     // 22
 console.log(num4);     // 21
 ```
+
 2. 一元加和减
 放在数值前无影响，但放在非数值的，会执行与使用与Number()转型函数一样的类型转换：布尔值false和true转换为0和1，字符串根据特殊规则进行解析，对象会掉用它们的valueOf()和/或toString()方法以得到可以转换的值。
+
 ```
 let num = 25;
 num = +num;
@@ -815,11 +945,14 @@ o = +o;    // -1
 数值的底层操作，也就是操作内存中表示数据的比特(位)。ECMAScript中的所有数值都以IEEE 754 64位格式存储，但位操作并不直接应用到64位表示，而是先把值转化为32位整数，在进行位操作，之后再把结果转化为64位。因为64位整数存储格式是不可见的，就只需要考虑32位整数即可。  
 前31位表示整数值，第32位表示数值符号，0表示正，1表示负，这一位称为符号位，它决定了数值其余部分的格式。
 **正值**以真正的二进制格式存储，即31位中的每一位都代表2的幂。比如：数值18的二进制格式为 0000000000000000010010 或更为精简的 10010。后者是用到的5个有效位，决定了实际的值。如下所示：
+
 ```
 1             0              0           1                0
 2**4 * 1      2**3 * 0     2**2 * 0     2**1 * 1       2**0 * 0
 ```
+
 **负值** 以一种称为二补数的二进制编码存储。一个数值的二补数通过如下3个步骤计算得到：
+
   1. 确定绝对值的二进制表示(如，对于-18，先确定18的二进制表示)
   2. 找到数值的一补数，换句话说，就是每个0都变成1，每个1变成0
   3. 给结果加1
@@ -828,10 +961,12 @@ o = +o;    // -1
   2. `1111  1111  1111  1111  1111  1111  1110  1101`
   3. `1111  1111  1111  1111  1111  1111  1110  1110` 所以这是-18的二进制表示。
 ECMAScript 会帮我们记录这些信息。在把负值输出为一个二进制字符串时，我们会得到一个前面加了减号的绝对值,如下
+
 ```
 let num = -18;
 console.log(num.toString(2));      // "-10010"
 ```
+
 在将-18转换为二进制字符串时，结果得到-10010。转换过程会求得二补数，然后在一更符合逻辑的形式表示出来。  
 注意: 默认情况下，ECMScript 中的所有整数都表示为有符号数。不过，确实存在无符号整数。对无符号整数来说。第32位不表示符号，因为只有正值，所以无符号数比有符号数整数的范围更大。  
 在对ECMAScript中的数值应用位操作符时，后台会发生转换：64位数值会转换为32位数值，然后执行位操作，最后再把结果从32位转换位64位存储起来。整个过程就像处理32位数值一样。这也导致了一个奇特的副属性，即特殊值NaN和Infinity 在位操作中都会被当成0处理。  
@@ -839,6 +974,7 @@ console.log(num.toString(2));      // "-10010"
 
 1. 按位非(~)
 返回数值的补数。按位非的最终结果是对数值取反减1.
+
 ```
 let num1 = 25;              //二进制 00000000000000000000000000011001
 let num2 = ~num1;           //二进制 11111111111111111111111111100110
@@ -848,6 +984,7 @@ let num1 = 25;
 let num2 = -num1 - 1;
 console.log(num2);    // -26
 ```
+
 位操作的速度更快。因为位操作是在数值底层表示上完成的。
 
 2. 按位与(&)
@@ -859,10 +996,12 @@ console.log(num2);    // -26
 |         0        |        0        |     0     |
 在两个都是1时返回1，在任何一位为0时返回0  
 下面例子，对数值25和3求与操作
+
 ```
 let result = 25 & 3;
 console.log(result);         // 1
 ```
+
 25 = 0000  0000  0000  0000  0000  0000  0001  1001  
 3  = 0000  0000  0000  0000  0000  0000  0000  0011  
 \---------------------------------------------------  
@@ -871,35 +1010,42 @@ AND= 0000  0000  0000  0000  0000  0000  0000  0001
 
 3. 按位或(|)
 有两个操作符。在至少一位是1时返回1，两位都是0返回0。
+
 ```
 let result = 25 | 3;
 console.log(result);     // 27
 ```
+
 25 = 0000  0000  0000  0000  0000  0000  0001  1001  
 3  = 0000  0000  0000  0000  0000  0000  0000  0011  
 \---------------------------------------------------  
-OR = 0000  0000  0000  0000  0000  0000  0001  1011    
+OR = 0000  0000  0000  0000  0000  0000  0001  1011
 因此结果就是 27
 
 4. 按位异或(^)
 两个操作符。只在1位上是1的时候返回1。(两位都是1 或 0，则返回0)。
+
 ```
 let result = 25 ^ 3;
 console.log(result);     // 26
 ```
+
 25 = 0000  0000  0000  0000  0000  0000  0001  1001  
 3  = 0000  0000  0000  0000  0000  0000  0000  0011  
 \---------------------------------------------------  
-XOR = 0000  0000  0000  0000  0000  0000  0001  1010 
+XOR = 0000  0000  0000  0000  0000  0000  0001  1010
 
 5. 左移( << )
 会按照指定的位数将数值的所有位向左移动。
+
 ```
 let old = 2;              // 等于二级制 10
 let newValue = old << 5;  // 等于二进制 1000000 即十进制64
 ```
+
 6. 有符号右移
 会将数值的所有32位都向右移，同时保留符号(正或负)。实际上是左移的逆运算。
+
 ```
 64 >> 5              // 2
 ````
@@ -907,10 +1053,12 @@ let newValue = old << 5;  // 等于二进制 1000000 即十进制64
 6. 无符号右移 ( >>> )
 对于正数与有符号右移相同。
 对于负数有很大不同。会将负数的二进制当成正数的二进制来处理。因为负数是其绝对值的二补数。
+
 ```
 let objValue = -64;       // 等于二进制 111111111111111111111111111000000
 objvalue >>> 5            //等于十进制 1345217726
 ```
+
 这是因为 把-64的二进制当成正值，右移 5 位，变成 0000011111111111111111111111111110，即134217726。
 
 #### 布尔操作符
@@ -923,32 +1071,40 @@ objvalue >>> 5            //等于十进制 1345217726
 如果第一个操作数是true，就不会对第二个操作数求值。
 
 #### 乘性操作符
+
 1. 乘法 (*)
 2. 除法(/)
 3. 取模(%)
 
 ### 指数操作符
+
 **    //  == Math.pow()
-` 16 ** 0.5   // 4`
+`16 ** 0.5   // 4`
 
 #### 加性操作符
+
 1. 加法操作符( + )
 可以用来求两数和。如果有一个操作符是字符串，则将第一个操作符转化为字符串进行拼接。如果任一操作符是对象、数值或布尔值，则会调用 toString() 方法以获取字符串。对于 undefined 和 null,则调用 String() 函数，分别获取 "undefined" 和 "null".
 2. 减法操作符( - )
 如果任一操作符是字符串、布尔值或null 或 undefined，则先在后台使用 Number()将其转为数值，然后再根据规则计算。如果任一操作符符是对象，则调用valueOf()方法取得表示的数值，如果没有给方法会调用其 toString() 方法，然后再将得到的字符串转为数值。
 
 #### 关系操作符
+
 < 、 > 、 <= 、>=
 
 #### 相等操作符
+
 1. 等于和不等于( == 、 !=)
 2. 全等和不全等 (=== 、 !==) 不会进行类型转换
 
 #### 条件操作符
+
 `variable = boolean_experssion ? true_value : false_value;`(表达式 ? 如果表达式为true : 为false)
 
 #### 赋值操作符（ = ）
+
 对应的复合赋值操作符
+
 ```
 *=
 /=
@@ -959,17 +1115,22 @@ objvalue >>> 5            //等于十进制 1345217726
 >>=
 >>>=
 ```
+
 #### 逗号操作符
+
 在赋值是使用逗号操作符分隔值，最终会返回表达式中的最后一个值
 ` let num = (1,2,3,4,5);      // 5 `
 
 ### 语句
 
 #### if语句
-` if(condition) statement1 else statement2`
+
+`if(condition) statement1 else statement2`
 
 #### do-while 语句
+
 后测试循环语句，循环至少执行一次。
+
 ```
 do{
 statement
@@ -977,10 +1138,12 @@ statement
 ```
 
 #### while 语句
+
 先测试循环语句。
 `while(expression) statement`
 
 #### for 语句
+
 ```
 for(initalization;expression;post-loop-expression) statement
 // 初始化、循环条件、循环表达式都不是必需的
@@ -997,17 +1160,21 @@ for (; i < count; ){
 ```
 
 #### for-in 语句
+
 是一种严格的迭代语句，用于枚举**对象中的非符号键属性**。
 `for (property in expression) statement`
 如果要迭代的变量是 null 或 undefined ，则不执行循环体
 
 #### for-of 语句
+
 是一种严格的迭代语句，用于遍历**可迭代的元素**
 `for (property of expression) statement`
 
 #### 标签语句
+
 配合 break 或 continue 语句引用。多用于跳出多重循环。
 `label: statement`
+
 ```
 for (let i = 0; i < 3; i++){
     for(let j = 0; j < 3; j++){
@@ -1031,13 +1198,17 @@ start :for (let i = 0; i < 3; i++){
 // [0, 0]
 // [0, 1]
 ```
+
 #### break 和 continue 语句
+
 break 跳出这整个循环
 continue 跳出本次循环
 
 #### with 语句
+
 将代码作用域设置为特定的对象。严格模式下会报错。(不推荐使用)
 `with (expression) statement;`
+
 ```
 let qs = location.search.substring(1);
 let hostName = location.hostname;
@@ -1051,6 +1222,7 @@ with(location){
 ```
 
 #### switch 语句
+
 ```
 switch(expression){
   case value1:
@@ -1061,12 +1233,14 @@ switch(expression){
     statement;
     break;
   default:
-    break;
+    statement;
  }
  ```
- 
- ### 函数
- ```function functionName(arg0,arg1,...argN){
-      statement;
-    }
+
+### 函数
+
+ ```
+ function functionName(arg0,arg1,...argN){
+    statement;
+}
  ```
