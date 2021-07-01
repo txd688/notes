@@ -1,5 +1,5 @@
 // 链表 head -> demo -> demo2 -> tail
-class LinkedList{
+export class LinkedList{
   constructor(){
     this.head = null; // 第一个节点
     this.tail = null; // 最后一个节点
@@ -42,6 +42,22 @@ class LinkedList{
       this.tail = newNode;
     }
     return this;
+  }
+  //删除当前头部节点
+  delHeader(){
+    if(!this.head)return null;
+    let temporaryHead = this.head;
+    // if(this.head.next){
+    //   this.head = this.head.next;
+    // }else{
+    //   this.head = null;
+    //   this.tail = null;
+    // }
+    this.head = this.head.next;
+    if(!this.head){
+      this.tail = null;
+    }
+    return temporaryHead.value;
   }
   //链表是否有元素
   isHaveNode(){
