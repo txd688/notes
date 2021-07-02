@@ -8,6 +8,7 @@ class Stack{
   }
   push(value){
     this.items.push(value);
+    return this;
   }
   pop(){
     return this.items.pop();
@@ -22,9 +23,7 @@ class Stack{
 
 let stack = new Stack();
 console.log('数组实现');
-stack.push("demo");
-stack.push("demo2");
-stack.push("demo3");
+stack.push("demo").push("demo2").push("demo3");
 console.log(stack.toArray());
 stack.pop();
 console.log(stack.toArray());
@@ -38,6 +37,7 @@ class StackList{
   push(value){
     //在头部添加节点
     this.list.prepend(value);
+    return this;
   }
   pop(){
     return this.list.delHeader();
@@ -52,9 +52,7 @@ class StackList{
 
 let stackList = new StackList();
 console.log('链表实现');
-stackList.push("demo01");
-stackList.push("demo02");
-stackList.push("demo03");
+stackList.push("demo01").push("demo02").push("demo03");
 console.log(stackList.toArray());
 stackList.pop();
 console.log(stackList.toArray());
